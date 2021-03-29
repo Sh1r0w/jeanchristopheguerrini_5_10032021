@@ -27,6 +27,12 @@ request.send();
 request.onreadystatechange = function() {
     if(this.readyState == XMLHttpRequest.DONE && this.status == 200) {
         let response = JSON.parse(this.responseText);
-        console.log(response);
+        let r = response;
+        console.log(r);
+        for (let r in response) {
+            document.querySelector('#listing').innerHTML += '<div class="card"><img class="card-img-top" src="'+response[r].imageUrl+'" alt="'+response[r].name+'"><div class="card-body"><h5 class="card-title">'+response[r].name+'</h5><p class="card-text">'+response[r].description+'</p></div></div>';
+        }
     }
-};
+        
+    };
+
