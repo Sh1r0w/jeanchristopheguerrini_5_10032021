@@ -1,3 +1,4 @@
 @import "./utils/variable_overrides";
+@import "./base/base_overrides";
+@import "./theme/font_overrides";
 @import "../node_modules/bootstrap/scss/bootstrap.scss";
-@import "./base/base";
