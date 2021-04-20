@@ -24,7 +24,6 @@ fetch(url)
             const lecture = JSON.parse(localStorage.getItem('c'+[r]));
             const index = r;
             let q = 1;
-            console.log(achat)
 
             achat.addEventListener('click', function () {
                 console.log('test');
@@ -33,21 +32,47 @@ fetch(url)
                 localStorage.setItem('p' + index, itemPanier_json);
             })
         }
-    
+
+
+        
+       /* for(r in response){
+            const retourPanier = new Promise((resolve, reject) => {
+            const recapPanier = document.querySelector('#recap');           
+                const localId = JSON.parse(localStorage.getItem('p'+ [r]))
+                console.log(localId)
+                //recapPanier.innerHTML += '<div class=""><img class="card-img-top col-2" src="' + localId.image + '"><h5 class="card-title">' + localId.name + '</h5>'
+
+            
+            panier.addEventListener('click', (event => {
+                event.preventDefault();
+                listing.classList.add('d-none');
+                listing.classList.remove('d-inline-flex');
+            }))
+         })
+        }*/
         })
     })
 
+
+
 const retourPanier = new Promise((resolve, reject) => {
+    const recapPanier = document.querySelector('#recap');
+    const r = JSON.parse(localStorage.length)
+    const lecture = JSON.parse(localStorage.getItem('c'+[r]));
+    console.log(lecture)
+    for(let i = 0; i < lecture; i++) {
+        const index = i;
+        const localId = JSON.parse(localStorage.getItem('p'+ index))
+        console.log(i)
+        //recapPanier.innerHTML += '<div class=""><img class="card-img-top col-2" src="' + localId.image + '"><h5 class="card-title">' + localId.name + '</h5>'
+    }
+    
     panier.addEventListener('click', (event => {
         event.preventDefault();
         listing.classList.add('d-none');
         listing.classList.remove('d-inline-flex');
-        for (let i in localStorage) {
-            const localId = JSON.parse(localStorage.getItem('p' + [r]))
-            console.log(localStorage.getItem('p' + [r]))
-            recapPanier.innerHTML += '<div class=""><img class="card-img-top col-2" src="' + localId.image + '"><h5 class="card-title">' + localId.name + '</h5>'
-        }
     }))
 })
+
 //let adresseActuelle = window.location
 //console.log(adresseActuelle);
