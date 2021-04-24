@@ -1,6 +1,6 @@
 const url = 'http://localhost:3000/api/cameras';
 //const url = 'https://ab-p5-api.herokuapp.com/api/cameras'
-const recapPanier = document.querySelector('#recap');
+const recapPanier = document.querySelector('#tabPanier');
 const listing = document.querySelector('#listing');
 const imgLocal = localStorage.getItem('img');
 const panierIndex = document.querySelector('#panier');
@@ -23,7 +23,7 @@ fetch(url)
             // catalogue.push(JSON.stringify(response));
             localStorage.setItem('catalogue', JSON.stringify(response));
 
-//----------------------------------------------------------------- Panier -----------------------------------------
+            //----------------------------------------------------------------- Panier -----------------------------------------
 
             // enregistrement dans le panier
             for (r in response) {
@@ -32,6 +32,7 @@ fetch(url)
                 achat.addEventListener('click', function () {
                     formulaire(index);
                     console.log(index)
+                    document.location.reload();
                 })
             }
 
@@ -101,11 +102,34 @@ function saveBasket(basket) {
 // affichage des produits dans le panier
 function listingPanier() {
     const recapPanier = document.querySelector('#recap');
+    const total = document.querySelector('#prixTotal');
     const localId = JSON.parse(localStorage.getItem('Panier'))
     console.log(localId)
     if (localId != null) {
+        recapPanier.classList.remove('d-none');
         for (i in localId) {
-            recapPanier.innerHTML += '<div class=""><img class="card-img-top col-2" src="' + localId[i].image + '"><h5 class="card-title">' + localId[i].name + '</h5>'
+
+            let indexPanier = ' ';
+            let totalPanier = ' ';
+
+
+            indexPanier += '<table>'
+            indexPanier += '<tr>'
+            indexPanier += '<td class="col-2 w-25"><img class="text-left w-50" src="' + localId[i].image + '"></td>'
+            indexPanier += '<td class="col-2 w-50">' + localId[i].name + '</td>'
+            indexPanier += '<td class="col-2">' + localId[i].Quantite + '</td>'
+            indexPanier += '<td class="col-6">' + localId[i].price * localId[i].Quantite + ' €</td>'
+            indexPanier += '</tr>'
+            indexPanier += '</table>'
+            recapPanier.innerHTML += indexPanier;
+
+            totalPanier += '<table>'
+            totalPanier += '<tr>'
+            totalPanier += '<td>Total HT' + localId[i].price * localId[i].Quantite / 1.8 + '€</td>'
+            totalPanier += '</tr>'
+            totalPanier += '</table>'
+            total.innerHTML = totalPanier;
+
         }
     } else {
         recapPanier.innerHTML = '<div class=""><p>Aucun article dans votre panier</p></div>'

@@ -36,19 +36,21 @@
                         </ul>
                     </div>
                     <div id="panier">Mon Panier <i class="fas fa-shopping-cart"></i>
-                    <p id="nbArticle"></p></nav></div>
-                    
+                        <p id="nbArticle"></p>
                 </nav>
             </div>
+
+            </nav>
         </div>
+    </div>
     </div>
     <div class="container">
         <div class="row">
             <div class="col-12 text-right">
-    
-</div>
+
+            </div>
+        </div>
     </div>
-</div>
     <div class="container">
         <div class="jumbotron">
             <h1 id='listecam'>Nos Cameras</h1>
@@ -58,7 +60,7 @@
     <!-- Listes Produits -->
     <div class="container">
         <div class="row">
-            <div id="listing"class="col-12 d-inline-flex flex-wrap justify-content-around text-center" >
+            <div id="listing" class="col-12 d-inline-flex flex-wrap justify-content-around text-center">
             </div>
         </div>
     </div>
@@ -66,12 +68,24 @@
     <!-- Panier -->
     <div class="container">
         <div class="row">
-            <div id="recap"class="col-12 d-inline-flex flex-wrap justify-content-around text-center" >
+            <div id="recap" class="col-12 d-none">
+                <div class="col-12">
+                    <table id="tabPanier">
+                        <tr>
+                            <td class="col-3 w-25">Produit</td>
+                            <td class="col-3 w-50">Nom</td>
+                            <td class="col-3">Quantité</td>
+                            <td class="col-3">Prix TTc</td>
+                        </tr>
+                    </table>
+                    <table id="prixTotal">
+                    </table>
+                </div>
             </div>
         </div>
     </div>
     <!-- Footer -->
-    <div class="container">
+    <footer class="container">
         <div class="row">
             <div class="col-12">
                 <ul>
@@ -80,8 +94,8 @@
                     </li>
                 </ul>
             </div>
-            </div>
-            </div>
+        </div>
+    </footer>
     <!-- Script -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
