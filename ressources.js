@@ -10,7 +10,10 @@ const catalogue = [];
 const panier = [];
 const lecture = JSON.parse(localStorage.getItem('catalogue'));
 const nbAff = document.getElementById('nbArticle');
-//const lecturePanier = JSON.parse(localStorage.getItem('panier'));
+const localId = JSON.parse(localStorage.getItem('Panier'))
+const total = document.getElementById('total');
+const panierGlobal = document.querySelector('#recap');
+const indexTotal = document.querySelector('#total');
 
 // récuprération liste des caméras et affichage / enregistrement dans le local storage
 fetch(url)
@@ -39,12 +42,7 @@ fetch(url)
             // affichage du panier
             panierIndex.addEventListener('click', (event => {
                 event.preventDefault();
-                listing.classList.add('d-none');
-                listing.classList.remove('d-inline-flex');
-                panierIndex.classList.add('d-none');
                 listingPanier();
-                titre.innerHTML = 'Mon Panier';
-                nbArticle(sousTitre);
             }))
 
         })
@@ -56,7 +54,7 @@ function formulaire(val) {
     let formulaire = {
         Ref: lecture[val]._id,
         name: lecture[val].name,
-        price: lecture[val].price / 100,
+        price: lecture[val].price * choixQte / 100,
         image: lecture[val].imageUrl,
         Quantite: choixQte,
     };
@@ -101,41 +99,60 @@ function saveBasket(basket) {
 
 // affichage des produits dans le panier
 function listingPanier() {
-    const recapPanier = document.querySelector('#recap');
-    const total = document.querySelector('#prixTotal');
-    const localId = JSON.parse(localStorage.getItem('Panier'))
+    titre.innerHTML = 'Mon Panier';
+    listing.classList.add('d-none');
+    listing.classList.remove('d-inline-flex');
+    panierGlobal.classList.remove('d-none');
+    panierIndex.classList.add('d-none');
     console.log(localId)
     if (localId != null) {
-        recapPanier.classList.remove('d-none');
+
         for (i in localId) {
 
             let indexPanier = ' ';
-            let totalPanier = ' ';
-
 
             indexPanier += '<table>'
             indexPanier += '<tr>'
-            indexPanier += '<td class="col-2 w-25"><img class="text-left w-50" src="' + localId[i].image + '"></td>'
-            indexPanier += '<td class="col-2 w-50">' + localId[i].name + '</td>'
-            indexPanier += '<td class="col-2">' + localId[i].Quantite + '</td>'
-            indexPanier += '<td class="col-6">' + localId[i].price * localId[i].Quantite + ' €</td>'
+            indexPanier += '<td class="border border-dark text-center"><img class="text-left w-50" src="' + localId[i].image + '"></td>'
+            indexPanier += '<td class="border border-dark text-center">' + localId[i].name + '</td>'
+            indexPanier += '<td class="border border-dark text-center">' + localId[i].Quantite + '</td>'
+            indexPanier += '<td class="border border-dark text-right">' + localId[i].price + ' €</td>'
             indexPanier += '</tr>'
             indexPanier += '</table>'
             recapPanier.innerHTML += indexPanier;
 
-            totalPanier += '<table>'
-            totalPanier += '<tr>'
-            totalPanier += '<td>Total HT' + localId[i].price * localId[i].Quantite / 1.8 + '€</td>'
-            totalPanier += '</tr>'
-            totalPanier += '</table>'
-            total.innerHTML = totalPanier;
-
         }
+
     } else {
-        recapPanier.innerHTML = '<div class=""><p>Aucun article dans votre panier</p></div>'
+        panierGlobal.innerHTML = '<div class="text-center"><p>Aucun article dans votre panier</p></div>'
+
     }
+    nbArticle(sousTitre);
+    formAddress()
+    totalPrice()
 }
 
+
+function totalPrice() {
+    let prix = 0;
+
+    if (localId != null) {
+        for(let r = 0; r <  localId.length; r++){
+            prix += Number(localId[r].price);
+            console.log(prix)
+        }
+        indexTotal.classList.remove('d-none');
+        let totalPanier = ' ';
+        let prixHt = prix / 1.2
+        let prixHtFinal = Math.round(prixHt * 100) / 100;
+        totalPanier += '<table>'
+        totalPanier += '<tr class="col-12 d-flex flex-column">'
+        totalPanier += '<td class="text-right border border-dark">Total HT ' + prixHtFinal + '€</td><td class="text-right border border-dark"> TVA: 20%</td><td class="text-right border border-dark">Prix TTC: ' + prix + '€</td>'
+        totalPanier += '</tr>'
+        totalPanier += '</table>'
+        total.innerHTML += totalPanier;
+    }
+}
 
 //affichage des articles présent dans le panier Sous Mon Panier
 function nbArticle(val) {
@@ -148,7 +165,17 @@ function nbArticle(val) {
 }
 nbArticle(nbAff);
 
+// Formulaire d'inscription pour la commande
+//Affichage du formulaire
 
-
+function formAddress() {
+    let indexForm = document.getElementById('formulaire');
+    indexForm.classList.remove('d-none');
+    if (localId != null) {
+        indexForm.innerHTML = '<div class="col-6 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required><label for="adresse">Adresse:</label><input type="text" id="address" required><label for="ville">Ville</label><input type="text" id="city" required><label for="email">E-mail</label><input type="email" required><input type="submit" id="validationForm"class="btn-success"></div>'
+    } else {
+        indexForm.classList.add('d-none');
+    }
+}
 //let adresseActuelle = window.location
 //console.log(adresseActuelle);*/
