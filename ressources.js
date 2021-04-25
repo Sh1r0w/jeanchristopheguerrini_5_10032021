@@ -5,6 +5,7 @@ const listing = document.querySelector('#listing');
 const imgLocal = localStorage.getItem('img');
 const panierIndex = document.querySelector('#panier');
 const titre = document.querySelector('#listecam');
+const mainTitre = document.querySelector('#mainTitre');
 const sousTitre = document.querySelector('#sousliste')
 const catalogue = [];
 const panier = [];
@@ -35,7 +36,6 @@ fetch(url)
                 achat.addEventListener('click', function () {
                     formulaire(index);
                     console.log(index)
-                    document.location.reload();
                 })
             }
 
@@ -82,6 +82,7 @@ function qte(formulaire) {
     } else {
         console.log('crée un nouvelle entrée')
         addToBasket(formulaire);
+       
     }
 }
 
@@ -90,11 +91,18 @@ function addToBasket(product) {
     let basket = basketInit();
     basket.push(product);
     saveBasket(basket);
+    //document.location.reload();
 }
+
+//affichage d'une alerte rajout au panier
+/*function alertPanier(val) {
+    mainTitre.innerHTML = '<div class="row z-index-3"><div class="col"><div class="alert alert-sucess alert-dismissible fade show" role="aler"><h5 class="alert-heading">Produit rajouter au panier<h5><div alert>'+val+'</div><button type="button" data-dismiss="alert">Continuer mes achats</button></div></div></div>';
+}*/
 
 // ajout au panier
 function saveBasket(basket) {
     localStorage.setItem('Panier', JSON.stringify(basket));
+    
 }
 
 // affichage des produits dans le panier
@@ -104,25 +112,26 @@ function listingPanier() {
     listing.classList.remove('d-inline-flex');
     panierGlobal.classList.remove('d-none');
     panierIndex.classList.add('d-none');
-    console.log(localId)
+    
     if (localId != null) {
 
         for (i in localId) {
-
+            let pos = panier.indexOf(localId[i].Ref);
             let indexPanier = ' ';
 
             indexPanier += '<table>'
             indexPanier += '<tr>'
-            indexPanier += '<td class="border border-dark text-center"><img class="text-left w-50" src="' + localId[i].image + '"></td>'
+            indexPanier += '<td id="idTab '+pos+'"class="border border-dark text-center"><img class="text-left w-50" src="' + localId[i].image + '"></td>'
             indexPanier += '<td class="border border-dark text-center">' + localId[i].name + '</td>'
-            indexPanier += '<td class="border border-dark text-center">' + localId[i].Quantite + '</td>'
+            indexPanier += '<td class="border border-dark text-center">' + localId[i].Quantite + ' <i id="trash" class="fas fa-trash-alt"></i></td>'
             indexPanier += '<td class="border border-dark text-right">' + localId[i].price + ' €</td>'
             indexPanier += '</tr>'
             indexPanier += '</table>'
             recapPanier.innerHTML += indexPanier;
-
+            
+            console.log(pos)
+            supression(pos);
         }
-
     } else {
         panierGlobal.innerHTML = '<div class="text-center"><p>Aucun article dans votre panier</p></div>'
 
@@ -132,6 +141,18 @@ function listingPanier() {
     totalPrice()
 }
 
+// Suppresion d'une entrée du panier
+
+function supression(val1){
+    let trash = document.getElementById('trash');
+trash.addEventListener('click', function(e){
+    e.preventDefault();
+    let sup = localId.splice(val1)
+    console.log(val1);
+})
+};
+
+//prix total avec affichage TVA
 
 function totalPrice() {
     let prix = 0;
@@ -143,11 +164,12 @@ function totalPrice() {
         }
         indexTotal.classList.remove('d-none');
         let totalPanier = ' ';
-        let prixHt = prix / 1.2
+        let prixHt = prix * 0.8
         let prixHtFinal = Math.round(prixHt * 100) / 100;
+        let diffPrix = Math.round((prix - prixHtFinal) *100) / 100;
         totalPanier += '<table>'
         totalPanier += '<tr class="col-12 d-flex flex-column">'
-        totalPanier += '<td class="text-right border border-dark">Total HT ' + prixHtFinal + '€</td><td class="text-right border border-dark"> TVA: 20%</td><td class="text-right border border-dark">Prix TTC: ' + prix + '€</td>'
+        totalPanier += '<td class="text-right border border-dark">Total HT: ' + prixHtFinal + ' €</td><td class="text-right border border-dark"> TVA 20% :' + diffPrix +' €</td><td class="text-right border border-dark">Prix TTC: ' + prix + ' €</td>'
         totalPanier += '</tr>'
         totalPanier += '</table>'
         total.innerHTML += totalPanier;
@@ -166,6 +188,7 @@ function nbArticle(val) {
 nbArticle(nbAff);
 
 // Formulaire d'inscription pour la commande
+
 //Affichage du formulaire
 
 function formAddress() {
