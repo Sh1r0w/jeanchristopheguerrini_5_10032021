@@ -91,7 +91,7 @@ function addToBasket(product) {
     let basket = basketInit();
     basket.push(product);
     saveBasket(basket);
-    //document.location.reload();
+    document.location.reload();
 }
 
 //affichage d'une alerte rajout au panier
