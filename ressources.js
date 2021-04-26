@@ -23,7 +23,7 @@ fetch(url)
     .then(function (data) {
         data.json().then(function (response) {
             for (r in response) {
-                listing.innerHTML += '<div class="col-3 p-2 m-2 card"><img class="card-img-top" src="' + response[r].imageUrl + '" alt="' + response[r].name + '"><div class="card-body"><h5 class="card-title">' + response[r].name + '</h5><p class="card-text">' + response[r].description + '</p><div class="card-price">Prix : ' + response[r].price / 100 + ' € TTC</div><input type="number" name="quantite" value="1" min="1" id="choixQte' + [r] + '" class="w-25"><a href="#" class="achat btn btn-danger m-2 productCard" id="achat' + [r] + '">Acheter</a><a href="" class="btn btn-danger m-2 ' + response[r]._id + '">En Savoir Plus</a></div></div>'
+                listing.innerHTML += '<div class="col-3 p-2 m-2 card"><img class="card-img-top" src="' + response[r].imageUrl + '" alt="' + response[r].name + '"><div class="card-body"><h5 class="card-title">' + response[r].name + '</h5><p class="card-text">' + response[r].description + '</p><div class="card-price">Prix : ' + response[r].price / 100 + ' € TTC</div><input type="number" name="quantite" value="1" min="1" id="choixQte' + [r] + '" class="w-25"><a href="#" class="achat btn btn-danger m-2 productCard" id="achat' + [r] + '">Acheter</a><a href="" class="btn btn-danger m-2" id="product' + [r] + '">En Savoir Plus</a></div></div>'
             }
 
             // catalogue.push(JSON.stringify(response));
@@ -35,11 +35,24 @@ fetch(url)
             for (r in response) {
                 let index = r
                 const achat = document.getElementById('achat' + [r]);
-                achat.addEventListener('click', function () {
+                achat.addEventListener('click', function (e) {
+                    e.preventDefault();
                     formulaire(index);
                     console.log(index)
+                });
+            }
+
+
+            // affichage page produit
+            for (r in response) {
+                let index = r;
+                const productPage = document.getElementById('product'+[r]);
+                productPage.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    pageProduct(index)
                 })
             }
+
 
             // affichage du panier
             panierIndex.addEventListener('click', (event => {
@@ -50,7 +63,22 @@ fetch(url)
         })
     })
 
-// Formulaire du panier
+// Affichage page produit Promise
+function pageProduct(val) {
+    let id = document.getElementById('product'+ val);
+
+let p1 = new Promise((resolve, reject) =>{
+        resolve(id)
+    })
+    p1.then(function(){
+        console.log(val)
+    })    
+    .catch(function(){
+        console.log('pas encore d id défini')
+    });
+}
+
+// Formulaire d'enregistrement local du panier
 function formulaire(val) {
     let choixQte = document.getElementById('choixQte' + val).value
     let formulaire = {
@@ -114,7 +142,7 @@ function listingPanier() {
     listing.classList.remove('d-inline-flex');
     panierGlobal.classList.remove('d-none');
     panierIndex.classList.add('d-none');
-    
+
     indexForm.classList.remove('d-none');
 
     let p1 = new Promise((resolve, reject) => {
@@ -140,7 +168,7 @@ function listingPanier() {
             supression(pos);
         }
     })
-    //affichage du prix avec TVA dans le panier
+        //affichage du prix avec TVA dans le panier
         .then(function () {
             for (let r = 0; r < localId.length; r++) {
                 prix += Number(localId[r].price);
