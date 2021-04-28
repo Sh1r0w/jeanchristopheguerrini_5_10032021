@@ -234,7 +234,6 @@ function listingPanier() {
                     console.log(id);
                     localId.splice(id, 1);
                     saveBasket(localId);
-                    timeoutPanier();
                     document.location.reload();
 
                 })
