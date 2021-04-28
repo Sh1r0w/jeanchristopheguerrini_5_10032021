@@ -17,12 +17,17 @@ const panierGlobal = document.querySelector('#recap');
 const indexTotal = document.querySelector('#total');
 let prix = 0;
 const indexForm = document.getElementById('formulaire');
+const productPage = document.getElementById('pageProduct');
 
 // récuprération liste des caméras et affichage / enregistrement dans le local storage
 fetch(url)
     .then(function (data) {
-        data.json().then(function (response) {
+        data.json()
+        .then(function (response) {
             for (r in response) {
+                let pr = response[r].price
+                let price = pr.toLocaleString('fr');
+                console.log(price)
                 listing.innerHTML += '<div class="col-3 p-2 m-2 card"><img class="card-img-top" src="' + response[r].imageUrl + '" alt="' + response[r].name + '"><div class="card-body"><h5 class="card-title">' + response[r].name + '</h5><p class="card-text">' + response[r].description + '</p><div class="card-price">Prix : ' + response[r].price / 100 + ' € TTC</div><input type="number" name="quantite" value="1" min="1" id="choixQte' + [r] + '" class="w-25"><a href="#" class="achat btn btn-danger m-2 productCard" id="achat' + [r] + '">Acheter</a><a href="" class="btn btn-danger m-2" id="product' + [r] + '">En Savoir Plus</a></div></div>'
             }
 
@@ -46,8 +51,8 @@ fetch(url)
             // affichage page produit
             for (r in response) {
                 let index = r;
-                const productPage = document.getElementById('product'+[r]);
-                productPage.addEventListener('click', function(e) {
+                const productPage = document.getElementById('product' + [r]);
+                productPage.addEventListener('click', function (e) {
                     e.preventDefault();
                     pageProduct(index)
                 })
@@ -61,38 +66,71 @@ fetch(url)
             }))
 
         })
+        .catch(function(){
+        console.error("Erreur de chargement de l'API")
+        })
     })
 
 // Affichage page produit Promise
 function pageProduct(val) {
-    let id = document.getElementById('product'+ val);
+    let id = document.getElementById('product' + val);
+    listing.classList.add('d-none');
+    listing.classList.remove('d-inline-flex');
+    productPage.classList.add('d-inline-flex');
+    productPage.classList.remove('d-none');
 
-let p1 = new Promise((resolve, reject) =>{
+    let p1 = new Promise((resolve, reject) => {
         resolve(id)
     })
-    p1.then(function(){
-        console.log(val)
-    })    
-    .catch(function(){
-        console.log('pas encore d id défini')
-    });
+    p1.then(function () {
+        
+        let index = val;
+        let pageHash = location.hash;
+        console.log(pageHash)
+        for (r in lecture) {
+            location.hash = lecture[val].name;
+            if (r === index) {
+
+                let indexProduct = "";
+                indexProduct += '<div id="productImg" class="col-12 d-inline-flex position-relative justify-content-end">'
+                indexProduct += '<div class=" text-left"><img src="' + lecture[index].imageUrl + '" alt="' + lecture[index].imageUrl + '" class="col-6"></div>'
+                indexProduct += '<div class="col-3 text-right position-absolute d-flex flex-column"><h1>' + lecture[index].name + '</h1><p class="fs-2">' + lecture[index].price / 100 + ' €</p><label for="lensesChoice">Choix de votre Lentilles (Obligatoire):</label><input list="lensesOptions" id="lensesChoice" required><a href="#" class="achat btn btn-danger m-2 productCard" id="achat' + [index] + '">Acheter</a></div>'
+                indexProduct += '<div><datalist id="lensesOptions"></div>'
+                indexProduct += '<div></datalist></div>'
+                indexProduct += '</div>'
+                indexProduct += '<div id="productDesc" class="">'
+                indexProduct += '<div><h3>Description du '+lecture[index].name+'</h3></div>'
+                indexProduct += '<div><p>'+lecture[index].description+'</p></div>'
+                indexProduct += '</div>'
+                productPage.innerHTML += indexProduct;
+
+                for (let i = 0; i < lecture[val].lenses.length; i++) {
+                    const indexLenses = document.getElementById('lensesOptions');
+                    indexLenses.innerHTML += '<option value="' + lecture[val].lenses[i] + '">';
+                }
+            }
+        }
+    })
+        .catch(function () {
+            console.log('pas encore d id défini')
+        });
 }
 
 // Formulaire d'enregistrement local du panier
 function formulaire(val) {
     let choixQte = document.getElementById('choixQte' + val).value
     let formulaire = {
-        Ref: lecture[val]._id,
+        ref: lecture[val]._id,
         name: lecture[val].name,
         price: lecture[val].price * choixQte / 100,
         image: lecture[val].imageUrl,
-        Quantite: choixQte,
+        quantite: choixQte,
     };
     qte(formulaire);
 }
 
 // initialisation du panier
-function basketInit(formulaire) {
+function basketInit() {
     let basket = localStorage.getItem('Panier');
     if (basket != null) {
         return JSON.parse(basket);
@@ -103,9 +141,8 @@ function basketInit(formulaire) {
 
 // vérification de présence dans le panier
 function qte(formulaire) {
-    let valeur = formulaire.Ref;
+    let valeur = formulaire.ref;
     let basket = localStorage.getItem('Panier');
-    nbBasket = parseInt(formulaire);
     if (basket != null && localStorage.getItem('Panier').indexOf(valeur) != -1) {
         console.log('deja dans le tableau')
 
@@ -135,37 +172,35 @@ function saveBasket(basket) {
 
 }
 
-// affichage des produits dans le panier
+// affichage des produits dans le panier Promise
+
 function listingPanier() {
     titre.innerHTML = 'Mon Panier';
     listing.classList.add('d-none');
+    productPage.classList.add('d-none');
+    productPage.classList.remove('d-inline-flex');
     listing.classList.remove('d-inline-flex');
     panierGlobal.classList.remove('d-none');
     panierIndex.classList.add('d-none');
-
     indexForm.classList.remove('d-none');
-
+    location.hash = "panier";
     let p1 = new Promise((resolve, reject) => {
         resolve(localId);
     })
     // Affichage des articles dans le panier
     p1.then(function () {
         for (i in localId) {
-            let pos = panier.indexOf(localId[i].Ref);
             let indexPanier = ' ';
 
             indexPanier += '<table>'
             indexPanier += '<tr>'
-            indexPanier += '<td id="idTab ' + pos + '"class="border border-dark text-center"><img class="text-left w-50" src="' + localId[i].image + '"></td>'
+            indexPanier += '<td id="idTab ' + localId[i].ref + '"class="border border-dark text-center"><img class="text-left w-50" src="' + localId[i].image + '"></td>'
             indexPanier += '<td class="border border-dark text-center">' + localId[i].name + '</td>'
-            indexPanier += '<td class="border border-dark text-center">' + localId[i].Quantite + ' <i id="trash" class="fas fa-trash-alt"></i></td>'
+            indexPanier += '<td class="border border-dark text-center">' + localId[i].quantite + ' <i id="trash' + localId[i].ref + '" class="fas fa-trash-alt"></i></td>'
             indexPanier += '<td class="border border-dark text-right">' + localId[i].price + ' €</td>'
             indexPanier += '</tr>'
             indexPanier += '</table>'
             recapPanier.innerHTML += indexPanier;
-
-            console.log(pos)
-            supression(pos);
         }
     })
         //affichage du prix avec TVA dans le panier
@@ -189,23 +224,28 @@ function listingPanier() {
         .then(function () {
             indexForm.innerHTML = '<div class="col-6 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required><label for="adresse">Adresse:</label><input type="text" id="address" required><label for="ville">Ville</label><input type="text" id="city" required><label for="email">E-mail</label><input type="email" required><input type="submit" id="validationForm"class="btn-success"></div>'
         })
+        // Suppresion d'une entrée du panier
+        .then(function () {
+            for (let r = 0; r < localId.length; r++) {
+                let indexTrash = document.getElementById('trash' + localId[r].ref);
+                indexTrash.addEventListener('click', function () {
+                    const result = localId.filter(item => item.ref === localId[r].ref)[0]
+                    let id = localId.indexOf(result);
+                    console.log(id);
+                    localId.splice(id, 1);
+                    saveBasket(localId);
+                    timeoutPanier();
+                    document.location.reload();
+
+                })
+            }
+        })
+
         .catch(function () {
             panierGlobal.innerHTML = '<div class="text-center"><p>Aucun article dans votre panier</p></div>';
 
         });
 }
-
-// Suppresion d'une entrée du panier
-
-function supression(val1) {
-    let trash = document.getElementById('trash');
-    trash.addEventListener('click', function (e) {
-        e.preventDefault();
-        let sup = localId.splice(val1)
-        console.log(val1);
-    })
-};
-
 
 //affichage du nombre d'articles présent dans le panier 
 function nbArticle(val) {
@@ -225,7 +265,6 @@ function nbArticle(val) {
 };
 nbArticle(nbAff);
 
-//let adresseActuelle = window.location
-//console.log(adresseActuelle);*/
+
 
 
