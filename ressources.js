@@ -58,8 +58,6 @@ function addEvent(val) {
                 achat.addEventListener('click', function (e) {
                     let choixQte2 = document.getElementById('choixQte'+ index).value
                     let choixLen1 = document.getElementById('lensesOptionsC'+ index).value
-                    console.log(choixQte2)
-                    console.log(index)
                     let choixQte = choixQte2
                     e.preventDefault();
                     formulaire(index, choixQte2, choixLen1);
@@ -175,7 +173,7 @@ function formulaire(val1, val2, val3) {
     qteP(formulaire);
     qte(formulaire);
 }
-
+setTimeout('formulaire', 500);
 // initialisation du panier
 function basketInit() {
     let basket = localStorage.getItem('Panier');
@@ -191,17 +189,17 @@ function qteP(formulaire) {
     let valeur1 = formulaire.quantite;
     let valeur = formulaire.ref;
     let basket = localStorage.getItem('Panier');
-    if (basket != null && localStorage.getItem('Panier').indexOf(valeur) != -1 && localStorage.getItem('Panier').indexOf(valeur1) != -1) {
+    const result = lecture.filter(item => item._id === formulaire.ref)[0]
+    if (basket != null && localStorage.getItem('Panier').indexOf(valeur) != -1 && localStorage.getItem('Panier').indexOf(valeur1) == -1) {
         console.log('deja dans le tableau')
+        let id = lecture.indexOf(result)
         addToBasket(formulaire);
-        setTimeout('supp(i)', 500);
+        supp(id);
     } else {
         console.log('crée un nouvelle entrée')
         addToBasket(formulaire);
-
     }
 }
-
 // vérification de présence dans le panier
 function qte(formulaire) {
     let valeur1 = formulaire.lentille;
@@ -276,16 +274,18 @@ function listingPanier() {
         for (i in localId){
             let index = i;
             let indexModif = document.getElementById('choixQteP' + [i])
-            let indexModifValue = document.getElementById('choixQteP' + [i]).value
+            
         let lentille = localId[i].lentille
-        indexModif.addEventListener('change', function(){ 
-            const result = lecture.filter(item => item.ref === localId[index].ref)[0]
+        const result = lecture.filter(item => item._id === localId[index].ref)[0]
+        indexModif.addEventListener('mouseout', function (e){
+            e.preventDefault();
+            let indexModifValue = document.getElementById('choixQteP' + [i]).value
             let id = lecture.indexOf(result);
-            //formulaire(i, indexModifValue, lentille);
-            console.log(result, indexModif.value, lentille)
-            console.log(lecture)
+
+            formulaire(id, indexModifValue, lentille)
         })
     }
+    
     })
         //affichage du prix avec TVA dans le panier
         .then(function () {
@@ -329,13 +329,11 @@ function listingPanier() {
         });
 }
 
-function delayedPanier(val){
-    console.log(val)
-}
 
 function supp(val){
-        const result = localId.filter(item => item.ref === localId[val].ref)[0]
+        const result = localId.filter(item => item.ref === localId[val].ref && item.quantite === localId[val].quantite)[0]
         let id = localId.indexOf(result);
+        console.log(id)
         localId.splice(id, 1);
         saveBasket(localId);
         document.location.reload();
