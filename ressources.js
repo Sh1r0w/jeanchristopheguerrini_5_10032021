@@ -1,4 +1,6 @@
-const url = 'http://localhost:3000/api/cameras';
+const url = 'http://localhost:3000/api/cameras/';
+const urlOrder = 'http://localhost:3000/api/cameras/order';
+const urlId = 'http://localhost:3000/api/cameras/:_id';
 //const url = 'https://ab-p5-api.herokuapp.com/api/cameras'
 const recapPanier = document.querySelector('#tabPanier');
 const listing = document.querySelector('#listing');
@@ -58,7 +60,6 @@ function addEvent(val) {
                 achat.addEventListener('click', function (e) {
                     let choixQte2 = document.getElementById('choixQte'+ index).value
                     let choixLen1 = document.getElementById('lensesOptionsC'+ index).value
-                    let choixQte = choixQte2
                     e.preventDefault();
                     formulaire(index, choixQte2, choixLen1);
                     alertPanier(index, choixLen1)
@@ -82,7 +83,7 @@ function addEvent(val) {
         .catch(function(){
             console.error('Erreur l65')
         })
-        .then(function(){
+        .then (function panierLook(){
             // affichage du panier
             panierIndex.addEventListener('click', (event => {
                 event.preventDefault();
@@ -162,19 +163,18 @@ function pageProduct(val) {
 // Formulaire d'enregistrement local du panier
 function formulaire(val1, val2, val3) {
     let choixQte = val2
-    let formulaire = {
-        ref: lecture[val1]._id,
-        lentille: val3,
-        name: lecture[val1].name,
-        price: lecture[val1].price * choixQte / 100,
-        image: lecture[val1].imageUrl,
-        quantite: choixQte,
+    let formulaire ={
+        "ref": [lecture[val1]._id],
+        "lentille": [val3],
+        "name": [lecture[val1].name],
+        "price": [lecture[val1].price * choixQte / 100],
+        "image": [lecture[val1].imageUrl],
+        "quantite": [choixQte],
     };
-    qteP(formulaire);
     qte(formulaire);
 }
-setTimeout('formulaire', 500);
 // initialisation du panier
+
 function basketInit() {
     let basket = localStorage.getItem('Panier');
     if (basket != null) {
@@ -185,29 +185,24 @@ function basketInit() {
 }
 
 // vérification de présence dans le panier
-function qteP(formulaire) {
-    let valeur1 = formulaire.quantite;
-    let valeur = formulaire.ref;
-    let basket = localStorage.getItem('Panier');
-    const result = lecture.filter(item => item._id === formulaire.ref)[0]
-    if (basket != null && localStorage.getItem('Panier').indexOf(valeur) != -1 && localStorage.getItem('Panier').indexOf(valeur1) == -1) {
-        console.log('deja dans le tableau')
-        let id = lecture.indexOf(result)
-        addToBasket(formulaire);
-        supp(id);
-    } else {
-        console.log('crée un nouvelle entrée')
-        addToBasket(formulaire);
-    }
-}
-// vérification de présence dans le panier
 function qte(formulaire) {
     let valeur1 = formulaire.lentille;
     let valeur = formulaire.ref;
+    let valeur3 = formulaire.quantite;
     let basket = localStorage.getItem('Panier');
-    if (basket != null && localStorage.getItem('Panier').indexOf(valeur) != -1 && localStorage.getItem('Panier').indexOf(valeur1) != -1) {
+    console.log(formulaire)
+    if (basket != null && localStorage.getItem('Panier').indexOf(valeur) != -1 && localStorage.getItem('Panier').indexOf(valeur1) != -1 ) {
         console.log('deja dans le tableau')
-
+        for(r in localId){
+            const filtre = localId.filter(item => valeur === localId[r].ref && formulaire.lentille === localId[r].lentille)[r]
+            let index = localId.indexOf(filtre)
+            if(valeur === localId[r].ref && valeur3 != localId[index].quantite){
+                localId.push(formulaire)
+                supp(index)
+            }
+           
+        }
+        
     } else {
         console.log('crée un nouvelle entrée')
         addToBasket(formulaire);
@@ -221,6 +216,7 @@ function addToBasket(product) {
     basket.push(product);
     saveBasket(basket);
     //document.location.reload();
+
 }
 
 //affichage d'une alerte rajout au panier
@@ -230,7 +226,7 @@ function alertPanier(val, val1) {
 }
 }
 
-// Promise Panier
+// sauvegarder item Panier
 function saveBasket(basket) {
     localStorage.setItem('Panier', JSON.stringify(basket));
 
@@ -239,6 +235,7 @@ function saveBasket(basket) {
 // affichage des produits dans le panier Promise
 
 function listingPanier() {
+    
     titre.innerHTML = 'Mon Panier';
     listing.classList.add('d-none');
     productPage.classList.add('d-none');
@@ -254,6 +251,7 @@ function listingPanier() {
     // Affichage des articles dans le panier
     p1.then(function () {
         for (i in localId) {
+            
             let pr = localId[i].price
             let price = pr.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
             let indexPanier = ' ';
@@ -262,31 +260,36 @@ function listingPanier() {
             indexPanier += '<tr>'
             indexPanier += '<td id="idTab ' + localId[i].ref + '"class="border border-dark text-center"><img class="text-left w-50" src="' + localId[i].image + '"></td>'
             indexPanier += '<td class="border border-dark text-center">' + localId[i].name + ' avec lentille ' +localId[i].lentille+'</td>'
-            indexPanier += '<td class="border border-dark text-center"><input type="number" name="quantite" value="' + localId[i].quantite + '" min="1" id="choixQteP' + [i] + '" class="w-25 text-center m-2"><i id="trash' + localId[i].ref + '" class="fas fa-trash-alt"></i></td>'
+            indexPanier += '<td class="border border-dark text-center"><select class="col-6 m-3" name="quantite" id="choixQteP' + [i] + '" value=" " class="w-25 text-center m-2"><option value="1"> 1 </option><option value="2"> 2 </option><option value="3"> 3 </option><option value="4"> 4 </option></select><i id="trash' + localId[i].ref + '" class="fas fa-trash-alt"></i></td>'
             indexPanier += '<td class="border border-dark text-right">' + price + '</td>'
             indexPanier += '</tr>'
             indexPanier += '</table>'
             recapPanier.innerHTML += indexPanier;
         }
+       
     })
+    
     //modification de quantité panier
-    .then(function(){
+    .then(function (){
         for (i in localId){
             let index = i;
             let indexModif = document.getElementById('choixQteP' + [i])
-            
         let lentille = localId[i].lentille
-        const result = lecture.filter(item => item._id === localId[index].ref)[0]
-        indexModif.addEventListener('mouseout', function (e){
+        const result = lecture.filter(item => item._id === localId[index].ref[0])[0]
+        indexModif.addEventListener('change', function (e){
             e.preventDefault();
-            let indexModifValue = document.getElementById('choixQteP' + [i]).value
+            //let indexModifValue = document.getElementById('choixQteP' + [i]).value
+            let indexModifValue = indexModif.selectedIndex +1
             let id = lecture.indexOf(result);
-
-            formulaire(id, indexModifValue, lentille)
-        })
+            console.log(indexModifValue)
+            localId[id].quantite += indexModifValue
+            localStorage.setItem('Panier', JSON.stringify(LocalId[id].quantite))
+            //formulaire(id, indexModifValue, lentille)
+        })     
     }
     
     })
+
         //affichage du prix avec TVA dans le panier
         .then(function () {
             for (let r = 0; r < localId.length; r++) {
@@ -310,7 +313,7 @@ function listingPanier() {
         })
         //Affichage du formulaire
         .then(function () {
-            indexForm.innerHTML = '<div class="col-6 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required><label for="adresse">Adresse:</label><input type="text" id="address" required><label for="ville">Ville</label><input type="text" id="city" required><label for="email">E-mail</label><input type="email" required><input type="submit" id="validationForm"class="btn-success"></div>'
+            indexForm.innerHTML = '<form class="validation"><div class="col-6 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required pattern="[A-Za-z-]{3,}"> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required pattern="[A-Za-z-]{3,}"><label for="adresse">Adresse:</label><input type="text" id="address" required pattern="[0-9 9-0][A-Za-z -]{2,}"><label for="ville">Ville</label><input type="text" id="city" required pattern="[0-9 9-0][A-Za-z-]{3,}"><label for="email">E-mail</label><input type="email" required pattern="[0-9 9-0[A-Za-z-.]{2,}+@[0-9 9-0[A-Za-z-]{2,}+.[A-Za-z]{2,4}"><input type="submit" id="validationForm"class="btn-success"></div></form>'
         })
         // Suppresion d'une entrée du panier
         .then(function () {
@@ -329,9 +332,8 @@ function listingPanier() {
         });
 }
 
-
 function supp(val){
-        const result = localId.filter(item => item.ref === localId[val].ref && item.quantite === localId[val].quantite)[0]
+        const result = localId.filter(item => item.ref === localId[val].ref)[0]
         let id = localId.indexOf(result);
         console.log(id)
         localId.splice(id, 1);
@@ -356,6 +358,42 @@ function nbArticle(val) {
 };
 nbArticle(nbAff);
 
+// post des informations
+function validation(){
+let index = document.querySelector('.validation')
+index.addEventListener(submit, function(e){
+    if(!form.chevkValidity()) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+form.classlist.add('was-calidated')
+},false)
+}
+
+/*const contactLastName = document.querySelector('lastName').value;
+const contactFirstName = document.querySelector('firstName').value;
+const contactAdress = document.querySelector('adress').value;
+const contactCity = document.querySelector('city').value;
+const contactEmail = document.querySelector('email').value;
+
+let contact = {
+    firstName: contactFirstName,
+    lastName: contactLastName,
+    adress: contactAdress,
+    city: contactCity,
+    email: contactEmail,    
+}
+
+function send(){
+    fetch("urlOrder",{
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify()
+    })
+}
 
 
-
+console.log(urlOrder)*/
