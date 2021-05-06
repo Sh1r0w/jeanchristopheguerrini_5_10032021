@@ -26,50 +26,50 @@ const popAlerte = document.getElementById('alerte');
 fetch(url)
     .then(function (data) {
         data.json()
-        .then(function (response) {
-            for (r in response) {
-                let pr = response[r].price /100
-                let price = pr.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
-                listing.innerHTML += '<div class="col-3 p-2 m-2 card"><img class="card-img-top" src="' + response[r].imageUrl + '" alt="' + response[r].name + '"><div class="card-body"><h5 class="card-title">' + response[r].name + '</h5><p class="card-text text-truncate">' + response[r].description + '</p><div class="card-price">Prix : ' + price + ' TTC</div><select class="col-10" list="lensesOptions" id="lensesOptionsC'+[r]+'""></select><input type="number" name="quantite" value="1" min="1" id="choixQte' + [r] + '" class="w-25 text-center"><a href="#" class="achat btn btn-danger m-2 productCard" id="achat' + [r] + '">Acheter</a><a href="" class="btn btn-danger m-2" id="product' + [r] + '">En Savoir Plus</a></div></div>'
+            .then(function (response) {
+                for (r in response) {
+                    let pr = response[r].price / 100
+                    let price = pr.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
+                    listing.innerHTML += '<div class="col-3 p-2 m-2 card"><img class="card-img-top" src="' + response[r].imageUrl + '" alt="' + response[r].name + '"><div class="card-body"><h5 class="card-title">' + response[r].name + '</h5><p class="card-text text-truncate">' + response[r].description + '</p><div class="card-price">Prix : ' + price + ' TTC</div><select class="col-10" list="lensesOptions" id="lensesOptionsC' + [r] + '""></select><input type="number" name="quantite" value="1" min="1" id="choixQte' + [r] + '" class="w-25 text-center"><a href="#" class="achat btn btn-danger m-2 productCard" id="achat' + [r] + '">Acheter</a><a href="" class="btn btn-danger m-2" id="product' + [r] + '">En Savoir Plus</a></div></div>'
 
-                for (let i = 0; i < response[r].lenses.length; i++) {
-                    let index = r
-                    const indexLenses = document.getElementById('lensesOptionsC'+[r]);
-                    indexLenses.innerHTML += '<option valeur="' + i + '">' + response[index].lenses[i] + '</option>';
+                    for (let i = 0; i < response[r].lenses.length; i++) {
+                        let index = r
+                        const indexLenses = document.getElementById('lensesOptionsC' + [r]);
+                        indexLenses.innerHTML += '<option valeur="' + i + '">' + response[index].lenses[i] + '</option>';
+                    }
                 }
-            }
-            
-            addEvent(response);
-            localStorage.setItem('catalogue', JSON.stringify(response));
-        })
+
+                addEvent(response);
+                localStorage.setItem('catalogue', JSON.stringify(response));
+            })
             //----------------------------------------------------------------- Panier -----------------------------------------
-         .catch(function(){
-        console.error("Erreur l26")
-        })
+            .catch(function () {
+                console.error("Erreur l26")
+            })
     })
 
 function addEvent(val) {
-    let p1 = new Promise((resolve, reject) =>{
+    let p1 = new Promise((resolve, reject) => {
         resolve(val)
     })
-        p1.then(function(){
-            // enregistrement dans le panier
-            for (r in val) {
-                let index = r
-                const achat = document.getElementById('achat' + [r]);
-                achat.addEventListener('click', function (e) {
-                    let choixQte2 = document.getElementById('choixQte'+ index).value
-                    let choixLen1 = document.getElementById('lensesOptionsC'+ index).value
-                    e.preventDefault();
-                    formulaire(index, choixQte2, choixLen1);
-                    alertPanier(index, choixLen1)
-                });
-            }
-        })
-        .catch(function(){
+    p1.then(function () {
+        // enregistrement dans le panier
+        for (r in val) {
+            let index = r
+            const achat = document.getElementById('achat' + [r]);
+            achat.addEventListener('click', function (e) {
+                let choixQte2 = document.getElementById('choixQte' + index).value
+                let choixLen1 = document.getElementById('lensesOptionsC' + index).value
+                e.preventDefault();
+                formulaire(index, choixQte2, choixLen1);
+                
+            });
+        }
+    })
+        .catch(function () {
             console.error('Erreur l48')
         })
-        .then(function(){
+        .then(function () {
             // affichage page produit
             for (r in val) {
                 let index = r;
@@ -80,21 +80,21 @@ function addEvent(val) {
                 })
             }
         })
-        .catch(function(){
+        .catch(function () {
             console.error('Erreur l65')
         })
-        .then (function panierLook(){
+        .then(function panierLook() {
             // affichage du panier
             panierIndex.addEventListener('click', (event => {
                 event.preventDefault();
                 listingPanier();
             }))
         })
-        .catch(function(){
+        .catch(function () {
             console.error('Erreur l79')
         })
-        }
-    
+}
+
 // Affichage page produit Promise
 
 function pageProduct(val) {
@@ -108,16 +108,16 @@ function pageProduct(val) {
         resolve(id)
     })
     p1.then(function () {
-        
+
         let index = val;
         let pageHash = location.hash;
         console.log(pageHash)
         for (r in lecture) {
             location.hash = lecture[val].name;
-            
+
             if (r === index) {
                 titre.innerHTML = lecture[index].name;
-                let pr = lecture[index].price /100
+                let pr = lecture[index].price / 100
                 let price = pr.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
                 let indexProduct = "";
                 indexProduct += '<div id="productImg" class="col-12 d-inline-flex position-relative justify-content-end">'
@@ -125,8 +125,8 @@ function pageProduct(val) {
                 indexProduct += '<div class="col-3 flex-column text-right"><h1>' + lecture[index].name + '</h1><p>' + price + '</p><label for="lensesChoice">Choix de votre Lentilles :</label><select list="lensesOptions" id="lensesOptions" class="col-10"></select><input type="number" name="quantite" value="1" min="1" id="choixQte1' + [index] + '" class="w-25 text-center m-2"><a href="#" class="col-5 achat btn btn-danger m-2 productCard" id="achatP' + [index] + '">Acheter</a></div>'
                 indexProduct += '</div>'
                 indexProduct += '<div id="productDesc" class="m-5">'
-                indexProduct += '<div><h3>Description du '+lecture[index].name+'</h3></div>'
-                indexProduct += '<div><p>'+lecture[index].description+'</p></div>'
+                indexProduct += '<div><h3>Description du ' + lecture[index].name + '</h3></div>'
+                indexProduct += '<div><p>' + lecture[index].description + '</p></div>'
                 indexProduct += '</div>'
                 productPage.innerHTML += indexProduct;
 
@@ -138,40 +138,36 @@ function pageProduct(val) {
             }
         }
     })
-    .then(function(){
-        for (r in lecture) {
-            if(val === r){
-            const achatP = document.getElementById('achatP' + val);
-            console.log(achatP)
-            achatP.addEventListener('click', function (e) {
-                let choixQte1 = document.getElementById('choixQte1' + [val]).value
-                let choixLen1 = document.getElementById('lensesOptions').value
-                console.log(choixLen1)
-                e.preventDefault();
-                formulaire(val, choixQte1, choixLen1);
-                console.log(val)
-                
-            });
-        }
-    }
-    })
+        .then(function () {
+            for (r in lecture) {
+                if (val === r) {
+                    const achatP = document.getElementById('achatP' + val);
+                    console.log(achatP)
+                    achatP.addEventListener('click', function (e) {
+                        let choixQte1 = document.getElementById('choixQte1' + [val]).value
+                        let choixLen1 = document.getElementById('lensesOptions').value
+                        console.log(choixLen1)
+                        e.preventDefault();
+                        formulaire(val, choixQte1, choixLen1);
+                        console.log(val)
+
+                    });
+                }
+            }
+        })
         .catch(function () {
             console.log('pas encore d id défini')
         });
 }
 
 // Formulaire d'enregistrement local du panier
-function formulaire(val1, val2, val3) {
-    let choixQte = val2
-    let formulaire ={
-        "ref": [lecture[val1]._id],
-        "lentille": [val3],
-        "name": [lecture[val1].name],
-        "price": [lecture[val1].price * choixQte / 100],
-        "image": [lecture[val1].imageUrl],
-        "quantite": [choixQte],
+function formulaire(ref, quantite, lentille) {
+    let formulaire = {
+        ref: lecture[ref]._id,
+        lentille: lentille,
+        quantite: quantite,
     };
-    qte(formulaire);
+    qte(formulaire, ref);
 }
 // initialisation du panier
 
@@ -185,28 +181,34 @@ function basketInit() {
 }
 
 // vérification de présence dans le panier
-function qte(formulaire) {
-    let valeur1 = formulaire.lentille;
-    let valeur = formulaire.ref;
-    let valeur3 = formulaire.quantite;
-    let basket = localStorage.getItem('Panier');
-    console.log(formulaire)
-    if (basket != null && localStorage.getItem('Panier').indexOf(valeur) != -1 && localStorage.getItem('Panier').indexOf(valeur1) != -1 ) {
-        console.log('deja dans le tableau')
-        for(r in localId){
-            const filtre = localId.filter(item => valeur === localId[r].ref && formulaire.lentille === localId[r].lentille)[r]
-            let index = localId.indexOf(filtre)
-            if(valeur === localId[r].ref && valeur3 != localId[index].quantite){
-                localId.push(formulaire)
-                supp(index)
-            }
-           
-        }
-        
-    } else {
-        console.log('crée un nouvelle entrée')
-        addToBasket(formulaire);
+function qte(formulaire, alerte) {
+    let lentille = formulaire.lentille;
+    let ref = formulaire.ref;
+    let quantite = formulaire.quantite;
 
+    let panier = JSON.parse(localStorage.getItem('Panier'));
+    let miseajour = false;
+
+    if (panier != null) {
+        for (i = 0; i < panier.length; i++) {
+            if (panier[i].ref == ref && panier[i].lentille == lentille) {
+                panier[i].quantite = quantite;
+                miseajour = true;
+                break;
+            }
+        }
+
+        if (miseajour == false) {
+            panier.push(formulaire);
+            miseajour = true;
+            alertPanier(alerte, lentille)
+        }
+        if (miseajour) {
+            saveBasket(panier);
+        }
+    } else {
+        addToBasket(formulaire);
+        alertPanier(alerte, lentille)
     }
 }
 
@@ -215,27 +217,31 @@ function addToBasket(product) {
     let basket = basketInit();
     basket.push(product);
     saveBasket(basket);
-    //document.location.reload();
-
 }
 
 //affichage d'une alerte rajout au panier
 function alertPanier(val, val1) {
-    for(r in lecture){
-    popAlerte.innerHTML = '<div class="row z-index-3"><div class="col"><div class="alert alert-sucess alert-dismissible fade show" role="aler"><h5 class="alert-heading">Produit rajouter au panier<h5><div alert>'+lecture[val].name+' Avec lentille de '+ val1+'</div><button type="button" data-dismiss="alert">Continuer mes achats</button></div></div></div>';
-}
+    for (r in lecture) {
+        popAlerte.innerHTML = '<div class="row z-index-3"><div class="col"><div class="alert alert-sucess alert-dismissible fade show" role="aler"><h5 class="alert-heading">Produit rajouter au panier<h5><div alert>' + lecture[val].name + ' Avec lentille de ' + val1 + '</div><button type="button" data-dismiss="alert">Continuer mes achats</button><button type="button" data-dismiss="alert" id="alertPanier">Mon Panier</button></div></div></div>';
+    }
+    let alertPanier = document.getElementById('alertPanier');
+    alertPanier.addEventListener('click', function(e){
+        e.preventDefault();
+        listingPanier()
+
+    })
 }
 
 // sauvegarder item Panier
 function saveBasket(basket) {
     localStorage.setItem('Panier', JSON.stringify(basket));
-
+    nbArticle(nbAff);
 }
 
 // affichage des produits dans le panier Promise
 
 function listingPanier() {
-    
+
     titre.innerHTML = 'Mon Panier';
     listing.classList.add('d-none');
     productPage.classList.add('d-none');
@@ -250,57 +256,59 @@ function listingPanier() {
     })
     // Affichage des articles dans le panier
     p1.then(function () {
+
         for (i in localId) {
-            
-            let pr = localId[i].price
+            const filter = lecture.filter(item => item._id === localId[i].ref)[0]
+            let id = lecture.indexOf(filter);
+            let pr = lecture[id].price / 100
             let price = pr.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
             let indexPanier = ' ';
-
+            
             indexPanier += '<table>'
             indexPanier += '<tr>'
-            indexPanier += '<td id="idTab ' + localId[i].ref + '"class="border border-dark text-center"><img class="text-left w-50" src="' + localId[i].image + '"></td>'
-            indexPanier += '<td class="border border-dark text-center">' + localId[i].name + ' avec lentille ' +localId[i].lentille+'</td>'
-            indexPanier += '<td class="border border-dark text-center"><select class="col-6 m-3" name="quantite" id="choixQteP' + [i] + '" value=" " class="w-25 text-center m-2"><option value="1"> 1 </option><option value="2"> 2 </option><option value="3"> 3 </option><option value="4"> 4 </option></select><i id="trash' + localId[i].ref + '" class="fas fa-trash-alt"></i></td>'
+            indexPanier += '<td id="idTab ' + localId[i].ref + '"class="border border-dark text-center"><img class="text-left w-50" src="' + lecture[id].imageUrl + '"></td>'
+            indexPanier += '<td class="border border-dark text-center">' + lecture[id].name + ' avec lentille ' + localId[i].lentille + '</td>'
+            indexPanier += '<td class="border border-dark text-center"><select class="col-6 m-3" name="quantite" id="choixQteP' + [i] + '" class="w-25 text-center m-2"><option value="1"> 1 </option><option value="2"> 2 </option><option value="3"> 3 </option><option value="4"> 4 </option></select><i id="trash' + localId[i].ref + '" class="fas fa-trash-alt"></i></td>'
             indexPanier += '<td class="border border-dark text-right">' + price + '</td>'
             indexPanier += '</tr>'
             indexPanier += '</table>'
             recapPanier.innerHTML += indexPanier;
+
+            
         }
-       
+        
     })
-    
-    //modification de quantité panier
-    .then(function (){
-        for (i in localId){
-            let index = i;
-            let indexModif = document.getElementById('choixQteP' + [i])
-        let lentille = localId[i].lentille
-        const result = lecture.filter(item => item._id === localId[index].ref[0])[0]
-        indexModif.addEventListener('change', function (e){
-            e.preventDefault();
-            //let indexModifValue = document.getElementById('choixQteP' + [i]).value
-            let indexModifValue = indexModif.selectedIndex +1
-            let id = lecture.indexOf(result);
-            console.log(indexModifValue)
-            localId[id].quantite += indexModifValue
-            localStorage.setItem('Panier', JSON.stringify(LocalId[id].quantite))
-            //formulaire(id, indexModifValue, lentille)
-        })     
-    }
-    
-    })
+
+        //modification de quantité panier
+        .then(function () {
+            for (i in localId) {
+                let indexModif = document.getElementById('choixQteP' + [i])
+                let lentille = localId[i].lentille
+                const result = lecture.filter(item => item._id === localId[i].ref)[0]
+                indexModif.addEventListener('change', function (e) {
+                    e.preventDefault();
+                    let indexModifValue = indexModif.selectedIndex + 1
+                    let id = lecture.indexOf(result);
+                    formulaire(id, indexModifValue, lentille)
+                    
+                })
+            }
+
+        })
 
         //affichage du prix avec TVA dans le panier
         .then(function () {
             for (let r = 0; r < localId.length; r++) {
-            
-                prix += Number(localId[r].price);
+                const filter = lecture.filter(item => item._id === localId[r].ref)[0]
+                let id = lecture.indexOf(filter);
+                prix += Number(lecture[id].price / 100);
+                
             }
             indexTotal.classList.remove('d-none');
             let totalPanier = ' ';
             let prixHt = prix * 0.8
-            let prixHtFinal = Math.round(prixHt * 100) / 100;
-            let diffPrix = Math.round((prix - prixHtFinal) * 100) / 100;
+            let prixHtFinal = Math.round(prixHt);
+            let diffPrix = Math.round(prix - prixHtFinal);
             let priceDif = diffPrix.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
             let priceHT = prixHtFinal.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
             let price = prix.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
@@ -313,32 +321,56 @@ function listingPanier() {
         })
         //Affichage du formulaire
         .then(function () {
-            indexForm.innerHTML = '<form class="validation"><div class="col-6 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required pattern="[A-Za-z-]{3,}"> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required pattern="[A-Za-z-]{3,}"><label for="adresse">Adresse:</label><input type="text" id="address" required pattern="[0-9 9-0][A-Za-z -]{2,}"><label for="ville">Ville</label><input type="text" id="city" required pattern="[0-9 9-0][A-Za-z-]{3,}"><label for="email">E-mail</label><input type="email" required pattern="[0-9 9-0[A-Za-z-.]{2,}+@[0-9 9-0[A-Za-z-]{2,}+.[A-Za-z]{2,4}"><input type="submit" id="validationForm"class="btn-success"></div></form>'
+            indexForm.innerHTML = '<form id="validation"><div class="col-6 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required" class="formulaireClient"> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required class="formulaireClient"><label for="adresse">Adresse:</label><input type="text" id="address" required class="formulaireClient"><label for="ville">Ville</label><input type="text" id="city" required class="formulaireClient"><label for="email">E-mail</label><input id="email" class="" type="email" required "><input type="submit" id="validationForm"class="btn-success m-2"></div></form>'
+            
+            const contactEmail = document.getElementById('email');
+            contactEmail.addEventListener('input', function(e){
+                e.preventDefault();
+                const contactEmailVal = contactEmail.value;
+                validationMail(contactEmailVal)
+            })  
         })
         // Suppresion d'une entrée du panier
         .then(function () {
             for (let r = 0; r < localId.length; r++) {
                 let index = r
                 let indexTrash = document.getElementById('trash' + localId[index].ref);
-                     indexTrash.addEventListener('click', function () {
-                      supp(index)
-               })
+                indexTrash.addEventListener('click', function () {
+                supp(index)
+                })
             }
         })
-
+        .then()
         .catch(function () {
             panierGlobal.innerHTML = '<div class="text-center"><p>Aucun article dans votre panier</p></div>';
 
         });
 }
 
-function supp(val){
-        const result = localId.filter(item => item.ref === localId[val].ref)[0]
-        let id = localId.indexOf(result);
-        console.log(id)
-        localId.splice(id, 1);
-        saveBasket(localId);
-        document.location.reload();
+
+
+function validationMail(test){
+    const regex = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm
+    const contactEmail = document.getElementById('email');
+
+    const regexResult = regex.test(test)
+    console.log(regexResult)
+            if(regexResult){
+                contactEmail.classList.add('bg-success')
+                contactEmail.classList.remove('bg-danger')  
+            }else{
+                contactEmail.classList.add('bg-danger')
+            }    
+}
+
+
+function supp(val) {
+    const result = localId.filter(item => item.ref === localId[val].ref)[0]
+    let id = localId.indexOf(result);
+    console.log(id)
+    localId.splice(id, 1);
+    saveBasket(localId);
+    document.location.reload();
 }
 //affichage du nombre d'articles présent dans le panier 
 function nbArticle(val) {
@@ -350,7 +382,7 @@ function nbArticle(val) {
 
     p1.then(
         function () {
-            val.innerHTML = '<div>(' + nb.length + ' Article(s) dans votre panier)</div>'
+            val.innerHTML = '<div>(' + nb.length + ' Article' + ((localId.length > 1) ? 's' : ' ') + ' dans votre panier)</div>'
         }).catch(
             function () {
                 val.innerHTML = '<div>(Aucun article dans votre panier)</div>'
@@ -358,32 +390,35 @@ function nbArticle(val) {
 };
 nbArticle(nbAff);
 
-// post des informations
-function validation(){
-let index = document.querySelector('.validation')
-index.addEventListener(submit, function(e){
-    if(!form.chevkValidity()) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-form.classlist.add('was-calidated')
-},false)
-}
 
 /*const contactLastName = document.querySelector('lastName').value;
 const contactFirstName = document.querySelector('firstName').value;
 const contactAdress = document.querySelector('adress').value;
-const contactCity = document.querySelector('city').value;
-const contactEmail = document.querySelector('email').value;
+const contactCity = document.querySelector('city').value;*/
 
-let contact = {
+
+// post des informations
+/*function validation() {
+    let index = document.querySelector('.validation')
+    index.addEventListener(submit, function (e) {
+        if (!form.chevkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        form.classlist.add('was-calidated')
+    }, false)
+}*/
+
+
+/*let contact = {
     firstName: contactFirstName,
     lastName: contactLastName,
     adress: contactAdress,
     city: contactCity,
-    email: contactEmail,    
-}
+    email: contactEmail,
+}*/
 
+/*
 function send(){
     fetch("urlOrder",{
         method: "POST",
@@ -395,5 +430,17 @@ function send(){
     })
 }
 
+function validationFormulaire(test){
+    const regex = /[^\p{L}\s._0-9\-]+/g
+    const contactFormulaire = document.getElementById('validationForm');
+    const regexResult = regex.test(test)
+
+            if(regexResult){
+                contactFormulaire.classList.remove('disabled')
+                
+            }else{
+                contactFormulaire.classList.add('disabled')
+            }    
+}
 
 console.log(urlOrder)*/
