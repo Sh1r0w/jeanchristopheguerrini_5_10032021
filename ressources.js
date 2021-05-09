@@ -21,6 +21,7 @@ let prix = 0;
 const indexForm = document.getElementById('formulaire');
 const productPage = document.getElementById('pageProduct');
 const popAlerte = document.getElementById('alerte');
+const panierValider = document.getElementById('sendForm');
 
 // récuprération liste des caméras et affichage / enregistrement dans le local storage
 fetch(url)
@@ -62,7 +63,7 @@ function addEvent(val) {
                 let choixLen1 = document.getElementById('lensesOptionsC' + index).value
                 e.preventDefault();
                 formulaire(index, choixQte2, choixLen1);
-                
+
             });
         }
     })
@@ -225,7 +226,7 @@ function alertPanier(val, val1) {
         popAlerte.innerHTML = '<div class="row z-index-3"><div class="col"><div class="alert alert-sucess alert-dismissible fade show" role="aler"><h5 class="alert-heading">Produit rajouter au panier<h5><div alert>' + lecture[val].name + ' Avec lentille de ' + val1 + '</div><button type="button" data-dismiss="alert">Continuer mes achats</button><button type="button" data-dismiss="alert" id="alertPanier">Mon Panier</button></div></div></div>';
     }
     let alertPanier = document.getElementById('alertPanier');
-    alertPanier.addEventListener('click', function(e){
+    alertPanier.addEventListener('click', function (e) {
         e.preventDefault();
         listingPanier()
 
@@ -263,7 +264,7 @@ function listingPanier() {
             let pr = lecture[id].price / 100
             let price = pr.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
             let indexPanier = ' ';
-            
+
             indexPanier += '<table>'
             indexPanier += '<tr>'
             indexPanier += '<td id="idTab ' + localId[i].ref + '"class="border border-dark text-center"><img class="text-left w-50" src="' + lecture[id].imageUrl + '"></td>'
@@ -274,9 +275,9 @@ function listingPanier() {
             indexPanier += '</table>'
             recapPanier.innerHTML += indexPanier;
 
-            
+
         }
-        
+
     })
 
         //modification de quantité panier
@@ -290,19 +291,19 @@ function listingPanier() {
                     let indexModifValue = indexModif.selectedIndex + 1
                     let id = lecture.indexOf(result);
                     formulaire(id, indexModifValue, lentille)
-                    
+
                 })
             }
 
         })
 
         //affichage du prix avec TVA dans le panier
-        .then(function () {
+        .then(function prixPanier() {
             for (let r = 0; r < localId.length; r++) {
                 const filter = lecture.filter(item => item._id === localId[r].ref)[0]
                 let id = lecture.indexOf(filter);
                 prix += Number(lecture[id].price / 100);
-                
+
             }
             indexTotal.classList.remove('d-none');
             let totalPanier = ' ';
@@ -321,14 +322,24 @@ function listingPanier() {
         })
         //Affichage du formulaire
         .then(function () {
-            indexForm.innerHTML = '<form id="validation"><div class="col-6 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required" class="formulaireClient"> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required class="formulaireClient"><label for="adresse">Adresse:</label><input type="text" id="address" required class="formulaireClient"><label for="ville">Ville</label><input type="text" id="city" required class="formulaireClient"><label for="email">E-mail</label><input id="email" class="" type="email" required "><input type="submit" id="validationForm"class="btn-success m-2"></div></form>'
-            
+            indexForm.innerHTML = '<form id="validation"><div class="col-6 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required class="formulaireClient"> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required class="formulaireClient"><label for="adresse">Adresse:</label><input type="text" id="address" required class="formulaireClient"><label for="ville">Ville</label><input type="text" id="city" required class="formulaireClient"><label for="email">E-mail</label><input id="email" class="" type="email" required "><input type="submit" id="validationForm"class=" m-2"></div></form>'
+
+            const name = document.getElementById('lastName');
+            const fName = document.getElementById('firstName');
+            const address = document.getElementById('address');
+            const city = document.getElementById('city');
             const contactEmail = document.getElementById('email');
-            contactEmail.addEventListener('input', function(e){
+            const allInput = document.getElementById('validation');
+
+            allInput.addEventListener('input', function (e) {
                 e.preventDefault();
                 const contactEmailVal = contactEmail.value;
-                validationMail(contactEmailVal)
-            })  
+                const nameV = name.value
+                const fNameV = fName.value
+                const addressV = address.value
+                const cityV = city.value
+                validationForm(nameV, fNameV, addressV, cityV, contactEmailVal)
+            })
         })
         // Suppresion d'une entrée du panier
         .then(function () {
@@ -336,11 +347,10 @@ function listingPanier() {
                 let index = r
                 let indexTrash = document.getElementById('trash' + localId[index].ref);
                 indexTrash.addEventListener('click', function () {
-                supp(index)
+                    supp(index)
                 })
             }
         })
-        .then()
         .catch(function () {
             panierGlobal.innerHTML = '<div class="text-center"><p>Aucun article dans votre panier</p></div>';
 
@@ -349,19 +359,7 @@ function listingPanier() {
 
 
 
-function validationMail(test){
-    const regex = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gm
-    const contactEmail = document.getElementById('email');
 
-    const regexResult = regex.test(test)
-    console.log(regexResult)
-            if(regexResult){
-                contactEmail.classList.add('bg-success')
-                contactEmail.classList.remove('bg-danger')  
-            }else{
-                contactEmail.classList.add('bg-danger')
-            }    
-}
 
 
 function supp(val) {
@@ -391,56 +389,112 @@ function nbArticle(val) {
 nbArticle(nbAff);
 
 
-/*const contactLastName = document.querySelector('lastName').value;
-const contactFirstName = document.querySelector('firstName').value;
-const contactAdress = document.querySelector('adress').value;
-const contactCity = document.querySelector('city').value;*/
+// passage du formulaire contact au regex
 
+function validationForm(name, fName, adress, city, mail) {
+    const validationForm = document.getElementById('validationForm')
+    const regexM = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/g
+    const test = name + fName + adress + city
+    const regex = /^([A-Za-z0-9 ,.'`-]{3,})$/g
+    const regexResult = regex.test(test)
+    const regexResultM = regexM.test(mail)
+    let contact = {
+        firstName: name,
+        lastName: fName,
+        address: adress,
+        city: city,
+        email: mail,
+    }
+    let p1 = new Promise((resolve, reject) => {
+        resolve(contact);
+    })
+    p1.then(function () {
+        if (regexResultM && regexResult) {
+            validationForm.classList.add('btn-success')
+            validationForm.classList.remove('disabled')
+            validationForm.classList.remove('btn-danger')
+            validationForm.setAttribute("value", "Valider la commande");
 
-// post des informations
-/*function validation() {
-    let index = document.querySelector('.validation')
-    index.addEventListener(submit, function (e) {
-        if (!form.chevkValidity()) {
-            e.preventDefault();
-            e.stopPropagation();
+        } else {
+            validationForm.classList.add('disabled')
+            validationForm.classList.add('btn-danger')
+            validationForm.setAttribute("value", "Caractére interdit");
         }
-        form.classlist.add('was-calidated')
-    }, false)
-}*/
+    })
+        .then(function () {
+            if (regexResultM == true && regexResult == true) {
+                validationForm.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    send(contact);
+                })
+            }
+        })
 
+}
 
-/*let contact = {
-    firstName: contactFirstName,
-    lastName: contactLastName,
-    adress: contactAdress,
-    city: contactCity,
-    email: contactEmail,
-}*/
+//Envoi des informations à l'api
 
-/*
-function send(){
-    fetch("urlOrder",{
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify()
+function send(contact) {
+    let p1 = new Promise((resolve, reject) => {
+        resolve(contact);
+    })
+    p1.then(function () {
+        let products = []
+        for (let r = 0; r < localId.length; r++) {
+            let product = localId[r].ref
+            products.push(product)
+        }
+        let info = { contact, products }
+
+        let options = {
+            method: "POST",
+            body: JSON.stringify(info),
+            headers: { 'Content-Type': 'application/json' }
+
+        }
+        console.log(info)
+        fetch('http://localhost:3000/api/cameras/order', options)
+            .then(data => {
+                data.json()
+                    .then(function (response) {
+                        if (response) {
+                            console.log(response);
+                            
+                            listing.classList.add('d-none');
+                            productPage.classList.add('d-none');
+                            productPage.classList.remove('d-inline-flex');
+                            listing.classList.remove('d-inline-flex');
+                            panierValider.classList.remove('d-none');
+                            panierIndex.classList.add('d-none');
+                            panierGlobal.classList.add('d-none');
+                            indexForm.classList.remove('d-none');
+                            indexTotal.classList.add('d-none');
+                            indexForm.classList.add('d-none');
+                            indexTotal.classList.remove('d-flex');
+
+                            titre.innerHTML = 'Merci de votre Commande Mr/Mme ' + response.contact.firstName;
+                            sousTitre.innerHTML = 'N° ' + response.orderId
+                            panierValider.innerHTML += '<div><p>Merci de votre achat chez Orinico<p><div>'
+                            panierValider.innerHTML += '<div><p>Voici le récapitulatif de votre commande<p><div>'
+                            panierValider.innerHTML += '<div class="prodForm"><div>'
+                            panierValider.innerHTML += '<div><p>votre commande sera expédié dans les plus bref délais<p><div>'
+                            panierValider.innerHTML += '<div><p> Voici les informations de livraison !<p><div>'
+                            panierValider.innerHTML += '<div><p>Nom : '+ response.contact.firstName + '<p><div>'
+                            panierValider.innerHTML += '<div><p>Prenom : '+ response.contact.lastName + '<p><div>'
+                            panierValider.innerHTML += '<div><p>Adresse : '+ response.contact.address + '<p><div>'
+                            panierValider.innerHTML += '<div><p>Email de contact : '+ response.contact.email + '<p><div>'
+                            
+                            let productForm = document.getElementById('prodForm')     
+                            
+                        }else if(productForm){
+                            console.log(productForm)
+                            for(r in response.products){  
+                                    
+                                productForm.innerHTML += '<p>Produit : '+ response.products[r].name + '<p>'
+                                }
+                            
+                        }
+                    })
+            });
     })
 }
-
-function validationFormulaire(test){
-    const regex = /[^\p{L}\s._0-9\-]+/g
-    const contactFormulaire = document.getElementById('validationForm');
-    const regexResult = regex.test(test)
-
-            if(regexResult){
-                contactFormulaire.classList.remove('disabled')
-                
-            }else{
-                contactFormulaire.classList.add('disabled')
-            }    
-}
-
-console.log(urlOrder)*/
