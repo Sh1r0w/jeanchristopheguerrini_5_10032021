@@ -452,7 +452,6 @@ function send(contact) {
             headers: { 'Content-Type': 'application/json' }
 
         }
-        console.log(info)
         fetch('http://localhost:3000/api/cameras/order', options)
             .then(data => {
                 data.json()
@@ -471,28 +470,20 @@ function send(contact) {
                             indexTotal.classList.add('d-none');
                             indexForm.classList.add('d-none');
                             indexTotal.classList.remove('d-flex');
-
-                            titre.innerHTML = 'Merci de votre Commande Mr/Mme ' + response.contact.firstName;
-                            sousTitre.innerHTML = 'N° ' + response.orderId
-                            panierValider.innerHTML += '<div><p>Merci de votre achat chez Orinico<p><div>'
-                            panierValider.innerHTML += '<div><p>Voici le récapitulatif de votre commande<p><div>'
-                            panierValider.innerHTML += '<div class="prodForm"><div>'
-                            panierValider.innerHTML += '<div><p>votre commande sera expédié dans les plus bref délais<p><div>'
-                            panierValider.innerHTML += '<div><p> Voici les informations de livraison !<p><div>'
-                            panierValider.innerHTML += '<div><p>Nom : '+ response.contact.firstName + '<p><div>'
-                            panierValider.innerHTML += '<div><p>Prenom : '+ response.contact.lastName + '<p><div>'
-                            panierValider.innerHTML += '<div><p>Adresse : '+ response.contact.address + '<p><div>'
-                            panierValider.innerHTML += '<div><p>Email de contact : '+ response.contact.email + '<p><div>'
-                            
-                            let productForm = document.getElementById('prodForm')     
-                            
-                        }else if(productForm){
-                            console.log(productForm)
-                            for(r in response.products){  
-                                    
-                                productForm.innerHTML += '<p>Produit : '+ response.products[r].name + '<p>'
-                                }
-                            
+                           // for(r in response){
+                                //console.log(response.products[r].name)
+                                titre.innerHTML = 'Merci de votre Commande Mr/Mme ' + response.contact.firstName;
+                                sousTitre.innerHTML = 'N° ' + response.orderId
+                                panierValider.innerHTML += '<div><p>Merci de votre achat chez Orinico<p><div>'
+                                panierValider.innerHTML += '<div><p>Voici le récapitulatif de votre commande<p><div>'
+                                //indexForm.innerHTML += '<div><p>Produit : '+ response.products[r].name + '<p><div>'
+                                panierValider.innerHTML += '<div><p>votre commande sera expédié dans les plus bref délais<p><div>'
+                                panierValider.innerHTML += '<div><p> Voici les informations de livraison !<p><div>'
+                                panierValider.innerHTML += '<div><p>Nom : '+ response.contact.firstName + '<p><div>'
+                                panierValider.innerHTML += '<div><p>Prenom : '+ response.contact.lastName + '<p><div>'
+                                panierValider.innerHTML += '<div><p>Adresse : '+ response.contact.address + '<p><div>'
+                                panierValider.innerHTML += '<div><p>Email de contact : '+ response.contact.email + '<p><div>'
+                          //  }
                         }
                     })
             });
