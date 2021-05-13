@@ -31,7 +31,7 @@ fetch(url)
                 for (r in response) {
                     let pr = response[r].price / 100
                     let price = pr.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
-                    listing.innerHTML += '<div class="col-3 p-2 m-2 card"><img class="card-img-top" src="' + response[r].imageUrl + '" alt="' + response[r].name + '"><div class="card-body"><h5 class="card-title">' + response[r].name + '</h5><p class="card-text text-truncate">' + response[r].description + '</p><div class="card-price">Prix : ' + price + ' TTC</div><select class="col-10" list="lensesOptions" id="lensesOptionsC' + [r] + '""></select><input type="number" name="quantite" value="1" min="1" id="choixQte' + [r] + '" class="w-25 text-center"><a href="#" class="achat btn btn-danger m-2 productCard" id="achat' + [r] + '">Acheter</a><a href="" class="btn btn-danger m-2" id="product' + [r] + '">En Savoir Plus</a></div></div>'
+                    listing.innerHTML += '<div class="col-lg-3 col-md-6 col-sm-12 p-2 m-2 card"><img class="card-img-top" src="' + response[r].imageUrl + '" alt="' + response[r].name + '"><div class="card-body"><h5 class="card-title">' + response[r].name + '</h5><p class="card-text text-truncate">' + response[r].description + '</p><div class="card-price">Prix : ' + price + ' TTC</div><select class="col-10" list="lensesOptions" id="lensesOptionsC' + [r] + '""></select><input type="number" name="quantite" value="1" min="1" id="choixQte' + [r] + '" class="w-25 text-center"><a href="#" class="achat btn btn-danger m-2 productCard" id="achat' + [r] + '">Acheter</a><a href="" class="btn btn-danger m-2" id="product' + [r] + '">En Savoir Plus</a></div></div>'
 
                     for (let i = 0; i < response[r].lenses.length; i++) {
                         let index = r
@@ -121,9 +121,9 @@ function pageProduct(val) {
                 let pr = lecture[index].price / 100
                 let price = pr.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
                 let indexProduct = "";
-                indexProduct += '<div id="productImg" class="col-12 d-inline-flex position-relative justify-content-end">'
-                indexProduct += '<div class=" text-left"><img src="' + lecture[index].imageUrl + '" alt="' + lecture[index].imageUrl + '" class="col-6"></div>'
-                indexProduct += '<div class="col-3 flex-column text-right"><h1>' + lecture[index].name + '</h1><p>' + price + '</p><label for="lensesChoice">Choix de votre Lentilles :</label><select list="lensesOptions" id="lensesOptions" class="col-10"></select><input type="number" name="quantite" value="1" min="1" id="choixQte1' + [index] + '" class="w-25 text-center m-2"><a href="#" class="col-5 achat btn btn-danger m-2 productCard" id="achatP' + [index] + '">Acheter</a></div>'
+                indexProduct += '<div id="productImg" class="col-12 d-lg-inline-flex position-relative justify-content-end">'
+                indexProduct += '<div class=" text-left"><img src="' + lecture[index].imageUrl + '" alt="' + lecture[index].imageUrl + '" class="col-lg-6 col-sm-12"></div>'
+                indexProduct += '<div class="col-lg-3 col-sm-12 flex-column text-lg-right text-sm-center"><h1>' + lecture[index].name + '</h1><p>' + price + '</p><label for="lensesChoice">Choix de votre Lentilles :</label><select list="lensesOptions" id="lensesOptions" class="col-10"></select><input type="number" name="quantite" value="1" min="1" id="choixQte1' + [index] + '" class="w-25 text-center m-2"><a href="#" class="col-5 achat btn btn-danger m-2 productCard" id="achatP' + [index] + '">Acheter</a></div>'
                 indexProduct += '</div>'
                 indexProduct += '<div id="productDesc" class="m-5">'
                 indexProduct += '<div><h3>Description du ' + lecture[index].name + '</h3></div>'
@@ -169,6 +169,7 @@ function formulaire(ref, quantite, lentille) {
         quantite: quantite,
     };
     qte(formulaire, ref);
+    prixPanier()
 }
 // initialisation du panier
 
@@ -258,7 +259,9 @@ function listingPanier() {
     // Affichage des articles dans le panier
     p1.then(function () {
 
+
         for (i in localId) {
+
             const filter = lecture.filter(item => item._id === localId[i].ref)[0]
             let id = lecture.indexOf(filter);
             let pr = lecture[id].price / 100
@@ -269,7 +272,7 @@ function listingPanier() {
             indexPanier += '<tr>'
             indexPanier += '<td id="idTab ' + localId[i].ref + '"class="border border-dark text-center"><img class="text-left w-50" src="' + lecture[id].imageUrl + '"></td>'
             indexPanier += '<td class="border border-dark text-center">' + lecture[id].name + ' avec lentille ' + localId[i].lentille + '</td>'
-            indexPanier += '<td class="border border-dark text-center"><select class="col-6 m-3" name="quantite" id="choixQteP' + [i] + '" class="w-25 text-center m-2"><option value="1"> 1 </option><option value="2"> 2 </option><option value="3"> 3 </option><option value="4"> 4 </option></select><i id="trash' + localId[i].ref + '" class="fas fa-trash-alt"></i></td>'
+            indexPanier += '<td class="border border-dark text-center"><select class="col-lg-6 col-md-10 text-center m-lg-2" name="quantite" id="choixQteP' + [i] + '"><option id="option' + [i] + '1" value="1"> 1 </option><option id="option' + [i] + '2" value="2"> 2 </option><option id="option' + [i] + '3" value="3"> 3 </option><option id="option' + [i] + '4" value="4"> 4 </option></select><i id="trash' + localId[i].ref + '" class="fas fa-trash-alt"></i></td>'
             indexPanier += '<td class="border border-dark text-right">' + price + '</td>'
             indexPanier += '</tr>'
             indexPanier += '</table>'
@@ -278,9 +281,9 @@ function listingPanier() {
 
         }
 
+        lookQte()
     })
-
-        //modification de quantité panier
+        //modification de la quantité panier
         .then(function () {
             for (i in localId) {
                 let indexModif = document.getElementById('choixQteP' + [i])
@@ -297,48 +300,17 @@ function listingPanier() {
 
         })
 
-        //affichage du prix avec TVA dans le panier
-        .then(function prixPanier() {
-            for (let r = 0; r < localId.length; r++) {
-                const filter = lecture.filter(item => item._id === localId[r].ref)[0]
-                let id = lecture.indexOf(filter);
-                prix += Number(lecture[id].price / 100);
 
-            }
-            indexTotal.classList.remove('d-none');
-            let totalPanier = ' ';
-            let prixHt = prix * 0.8
-            let prixHtFinal = Math.round(prixHt);
-            let diffPrix = Math.round(prix - prixHtFinal);
-            let priceDif = diffPrix.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
-            let priceHT = prixHtFinal.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
-            let price = prix.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
-            totalPanier += '<table class="col-4">'
-            totalPanier += '<tr class="col-12 d-flex flex-column">'
-            totalPanier += '<td class="text-right border border-dark">Total HT: ' + priceHT + '</td><td class="text-right border border-dark"> TVA 20% :' + priceDif + '</td><td class="text-right border border-dark">Prix TTC: ' + price + ' </td>'
-            totalPanier += '</tr>'
-            totalPanier += '</table>'
-            total.innerHTML += totalPanier;
-        })
         //Affichage du formulaire
         .then(function () {
-            indexForm.innerHTML = '<form id="validation"><div class="col-6 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required class="formulaireClient"> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required class="formulaireClient"><label for="adresse">Adresse:</label><input type="text" id="address" required class="formulaireClient"><label for="ville">Ville</label><input type="text" id="city" required class="formulaireClient"><label for="email">E-mail</label><input id="email" class="" type="email" required "><input type="submit" id="validationForm"class=" m-2"></div></form>'
+            indexForm.innerHTML = '<form id="validation"><div class="col-lg-6 col-sm-12 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required></input> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required></input><label for="adresse">Adresse:</label><input type="text" id="address" required></input><label for="ville">Ville</label><input type="text" id="city" required ></input><label for="email">E-mail</label><input id="email" class="" type="email" required "></input><input type="submit" id="validationForm"class=" m-2"></div></form>'
 
-            const name = document.getElementById('lastName');
-            const fName = document.getElementById('firstName');
-            const address = document.getElementById('address');
-            const city = document.getElementById('city');
-            const contactEmail = document.getElementById('email');
             const allInput = document.getElementById('validation');
 
             allInput.addEventListener('input', function (e) {
                 e.preventDefault();
-                const contactEmailVal = contactEmail.value;
-                const nameV = name.value
-                const fNameV = fName.value
-                const addressV = address.value
-                const cityV = city.value
-                validationForm(nameV, fNameV, addressV, cityV, contactEmailVal)
+                validationForm(getContact());
+
             })
         })
         // Suppresion d'une entrée du panier
@@ -351,16 +323,58 @@ function listingPanier() {
                 })
             }
         })
+        // envoi des informations à getContact pour passer à la validation
+        .then(function () {
+            document.getElementById('validationForm').addEventListener('click', function (e) {
+                e.preventDefault();
+                send(getContact());
+            })
+        })
         .catch(function () {
             panierGlobal.innerHTML = '<div class="text-center"><p>Aucun article dans votre panier</p></div>';
 
         });
 }
 
-
-
-
-
+// création des objets contact
+function getContact() {
+    return {
+        firstName: document.getElementById('firstName').value,
+        lastName: document.getElementById('lastName').value,
+        address: document.getElementById('address').value,
+        city: document.getElementById('city').value,
+        email: document.getElementById('email').value,
+    }
+}
+//affichage des quantitées dans le panier
+function lookQte() {
+    for (i in localId) {
+        document.getElementById('option' + [i] + localId[i].quantite).setAttribute("selected", true)
+    }
+    prixPanier()
+}
+//affichage du prix avec TVA dans le panier
+function prixPanier() {
+    for (let r = 0; r < localId.length; r++) {
+        const filter = lecture.filter(item => item._id === localId[r].ref)[0]
+        let id = lecture.indexOf(filter);
+        prix += (lecture[id].price * localId[r].quantite) / 100;
+    }
+    indexTotal.classList.remove('d-none');
+    let totalPanier = ' ';
+    let prixHt = prix * 0.8
+    let prixHtFinal = Math.round(prixHt);
+    let diffPrix = Math.round(prix - prixHtFinal);
+    let priceDif = diffPrix.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
+    let priceHT = prixHtFinal.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
+    let price = prix.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
+    totalPanier += '<table class="col-lg-4 col-md-6">'
+    totalPanier += '<tr class="col-12 d-flex flex-column">'
+    totalPanier += '<td class="text-right border border-dark">Total HT: ' + priceHT + '</td><td class="text-right border border-dark"> TVA 20% :' + priceDif + '</td><td class="text-right border border-dark">Prix TTC: ' + price + ' </td>'
+    totalPanier += '</tr>'
+    totalPanier += '</table>'
+    total.innerHTML = totalPanier;
+}
 
 function supp(val) {
     const result = localId.filter(item => item.ref === localId[val].ref)[0]
@@ -368,7 +382,7 @@ function supp(val) {
     console.log(id)
     localId.splice(id, 1);
     saveBasket(localId);
-    document.location.reload();
+    //document.location.reload();
 }
 //affichage du nombre d'articles présent dans le panier 
 function nbArticle(val) {
@@ -391,50 +405,79 @@ nbArticle(nbAff);
 
 // passage du formulaire contact au regex
 
-function validationForm(name, fName, adress, city, mail) {
+function validationForm() {
     const validationForm = document.getElementById('validationForm')
     const regexM = /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/g
-    const test = name + fName + adress + city
-    const regex = /^([A-Za-z0-9 ,.'`-]{3,})$/g
-    const regexResult = regex.test(test)
-    const regexResultM = regexM.test(mail)
-    let contact = {
-        firstName: name,
-        lastName: fName,
-        address: adress,
-        city: city,
-        email: mail,
-    }
+    const contact = getContact();
+    const regexFirstName = /^([A-Za-z ,.'`-]{2,})$/g
+    const regexLastName = /^([A-Za-z ,.'`-]{2,})$/g
+    const regexAddress = /^([A-Za-z0-9 ,.'`-]{3,})$/g
+    const regexCity = /^([A-Za-z0-9 ,.'`-]{3,})$/g
+    const regexResultFirstName = regexFirstName.test(contact.firstName)
+    const regexResultLastName = regexLastName.test(contact.lastName)
+    const regexResultCity = regexCity.test(contact.city)
+    const regexResultAddress = regexAddress.test(contact.address)
+    const regexResultM = regexM.test(contact.email)
+    console.log(regexResultFirstName, regexResultLastName, regexResultCity, regexResultAddress, regexResultM)
     let p1 = new Promise((resolve, reject) => {
         resolve(contact);
     })
     p1.then(function () {
-        if (regexResultM && regexResult) {
-            validationForm.classList.add('btn-success')
-            validationForm.classList.remove('disabled')
-            validationForm.classList.remove('btn-danger')
-            validationForm.setAttribute("value", "Valider la commande");
-
+        if (regexResultFirstName == false) {
+            validationForm.disabled = true;
+            document.getElementById('firstName').classList.add('border-danger')
         } else {
-            validationForm.classList.add('disabled')
-            validationForm.classList.add('btn-danger')
-            validationForm.setAttribute("value", "Caractére interdit");
+            validationForm.disabled = false;
+            document.getElementById('firstName').classList.add('border-success')
+            document.getElementById('firstName').classList.remove('border-danger')
         }
     })
         .then(function () {
-            if (regexResultM == true && regexResult == true) {
-                validationForm.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    send(contact);
-                })
+            if (regexResultLastName == false) {
+                validationForm.disabled = true;
+                document.getElementById('lastName').classList.add('border-danger')
+            } else {
+                validationForm.disabled = false;
+                document.getElementById('lastName').classList.remove('border-danger')
+                document.getElementById('lastName').classList.add('border-success')
             }
         })
-
+        .then(function () {
+            if (regexResultCity == false) {
+                validationForm.disabled = true;
+                document.getElementById('city').classList.add('border-danger')
+            } else {
+                validationForm.disabled = false;
+                document.getElementById('city').classList.remove('border-danger')
+                document.getElementById('city').classList.add('border-success')
+            }
+        })
+        .then(function () {
+            if (regexResultAddress == false) {
+                validationForm.disabled = true;
+                document.getElementById('address').classList.add('border-danger')
+            } else {
+                validationForm.disabled = false;
+                document.getElementById('address').classList.remove('border-danger')
+                document.getElementById('address').classList.add('border-success')
+            }
+        })
+        .then(function () {
+            if (regexResultM == false) {
+                validationForm.disabled = true;
+                document.getElementById('email').classList.add('border-danger')
+            } else {
+                validationForm.disabled = false;
+                document.getElementById('email').classList.remove('border-danger')
+                document.getElementById('email').classList.add('border-success')
+            }
+        })
 }
 
 //Envoi des informations à l'api
 
 function send(contact) {
+    console.log('fdsfdsq')
     let p1 = new Promise((resolve, reject) => {
         resolve(contact);
     })
@@ -458,7 +501,7 @@ function send(contact) {
                     .then(function (response) {
                         if (response) {
                             console.log(response);
-                            
+
                             listing.classList.add('d-none');
                             productPage.classList.add('d-none');
                             productPage.classList.remove('d-inline-flex');
@@ -470,20 +513,22 @@ function send(contact) {
                             indexTotal.classList.add('d-none');
                             indexForm.classList.add('d-none');
                             indexTotal.classList.remove('d-flex');
-                           // for(r in response){
-                                //console.log(response.products[r].name)
-                                titre.innerHTML = 'Merci de votre Commande Mr/Mme ' + response.contact.firstName;
-                                sousTitre.innerHTML = 'N° ' + response.orderId
-                                panierValider.innerHTML += '<div><p>Merci de votre achat chez Orinico<p><div>'
-                                panierValider.innerHTML += '<div><p>Voici le récapitulatif de votre commande<p><div>'
-                                //indexForm.innerHTML += '<div><p>Produit : '+ response.products[r].name + '<p><div>'
-                                panierValider.innerHTML += '<div><p>votre commande sera expédié dans les plus bref délais<p><div>'
-                                panierValider.innerHTML += '<div><p> Voici les informations de livraison !<p><div>'
-                                panierValider.innerHTML += '<div><p>Nom : '+ response.contact.firstName + '<p><div>'
-                                panierValider.innerHTML += '<div><p>Prenom : '+ response.contact.lastName + '<p><div>'
-                                panierValider.innerHTML += '<div><p>Adresse : '+ response.contact.address + '<p><div>'
-                                panierValider.innerHTML += '<div><p>Email de contact : '+ response.contact.email + '<p><div>'
-                          //  }
+
+
+                            titre.innerHTML = 'Merci de votre Commande Mr/Mme ' + response.contact.firstName;
+                            sousTitre.innerHTML = 'N° ' + response.orderId
+                            panierValider.innerHTML += '<div><p>Merci de votre achat chez Orinico<p><div>'
+                            panierValider.innerHTML += '<div><p>Voici le récapitulatif de votre commande<p><div>'
+                            for (r in response.products) {
+                                panierValider.innerHTML += '<div><p>Produit : ' + response.products[r].name + '<p><div>'
+                            }
+                            panierValider.innerHTML += '<div><p>votre commande sera expédié dans les plus bref délais<p><div>'
+                            panierValider.innerHTML += '<div><p> Voici les informations de livraison !<p><div>'
+                            panierValider.innerHTML += '<div><p>Nom : ' + response.contact.firstName + '<p><div>'
+                            panierValider.innerHTML += '<div><p>Prenom : ' + response.contact.lastName + '<p><div>'
+                            panierValider.innerHTML += '<div><p>Adresse : ' + response.contact.address + '<p><div>'
+                            panierValider.innerHTML += '<div><p>Email de contact : ' + response.contact.email + '<p><div>'
+
                         }
                     })
             });
