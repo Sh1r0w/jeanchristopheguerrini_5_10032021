@@ -114,10 +114,8 @@ function pageProduct(val) {
         let index = val;
         for (r in lecture) {
             //ajout du nom dans l'url
-            let global = / /g;
-            let newLocation = lecture[val].name.replace(global,'-')
-            location.hash = newLocation;
-            let retour = window.location.hash.substring(1);
+            location.hash = lecture[val]._id;
+            
             if (r === index) {
                 titre.innerHTML = lecture[index].name;
                 let pr = lecture[index].price / 100
@@ -155,7 +153,7 @@ function pageProduct(val) {
                         e.preventDefault();
                         formulaire(val, choixQte1, choixLen1);
                         console.log(val)
-
+                        nbArticle(nbAff);
                     });
                 }
             }
@@ -244,8 +242,26 @@ function saveBasket(basket) {
     nbArticle(nbAff);
 }
 
-// affichage des produits dans le panier Promise
+// ecoute du hash de l'url
+function listingHash(){
+let retour = window.location.hash.substring(1);
+let p1 = new Promise((resolve, reject) =>{
+    resolve(retour);
+    
+})
+p1.then(function(){
+const result = lecture.filter(item => item._id === retour)[0]
+let index = lecture.indexOf(result)
+console.log(index)
+//pageProduct(index)
+})
+.catch(function(){
+    console.warning('erreur L245')
+})
+}
+listingHash()
 
+// affichage des produits dans le panier Promise
 function listingPanier() {
 
     titre.innerHTML = 'Mon Panier';
@@ -277,7 +293,7 @@ function listingPanier() {
             indexPanier += '<td id="idTab ' + localId[i].ref + '"class="border border-dark text-center"><img class="text-left w-50" src="' + lecture[id].imageUrl + '"></td>'
             indexPanier += '<td class="border border-dark text-center">' + lecture[id].name + ' avec lentille ' + localId[i].lentille + '</td>'
             indexPanier += '<td class="border border-dark text-center"><select class="col-lg-6 col-md-10 text-center m-lg-2" name="quantite" id="choixQteP' + [i] + '"><option id="option' + [i] + '1" value="1"> 1 </option><option id="option' + [i] + '2" value="2"> 2 </option><option id="option' + [i] + '3" value="3"> 3 </option><option id="option' + [i] + '4" value="4"> 4 </option></select><i id="trash' + localId[i].ref + '" class="fas fa-trash-alt"></i></td>'
-            indexPanier += '<td class="border border-dark text-right">' + price + '</td>'
+            indexPanier += '<td class="border border-dark text-right" id="prixUnitaire">' + price + '</td>'
             indexPanier += '</tr>'
             indexPanier += '</table>'
             recapPanier.innerHTML += indexPanier;
@@ -357,13 +373,17 @@ function lookQte() {
     }
     prixPanier()
 }
+
 //affichage du prix avec TVA dans le panier
 function prixPanier() {
-    for (let r = 0; r < localId.length; r++) {
+    let prix = 0;
+    for (r in localId) {
+        let qtePanier = document.getElementById('choixQteP'+[r]).value;
         const filter = lecture.filter(item => item._id === localId[r].ref)[0]
         let id = lecture.indexOf(filter);
-        prix += Number(lecture[id].price * localId[r].quantite) / 100;
+        prix += (lecture[id].price * qtePanier) / 100;
     }
+    
     indexTotal.classList.remove('d-none');
     let totalPanier = ' ';
     let prixHt = prix * 0.8
@@ -380,6 +400,7 @@ function prixPanier() {
     total.innerHTML = totalPanier;
 }
 
+// suppression dans le panier
 function supp(val) {
     const result = localId.filter(item => item.ref === localId[val].ref)[0]
     let id = localId.indexOf(result);
@@ -388,6 +409,7 @@ function supp(val) {
     saveBasket(localId);
     //document.location.reload();
 }
+
 //affichage du nombre d'articles présent dans le panier 
 function nbArticle(val) {
     const nb = JSON.parse(localStorage.getItem('Panier'));
