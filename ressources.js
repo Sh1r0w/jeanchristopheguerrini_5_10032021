@@ -84,8 +84,9 @@ function addEvent(val) {
         .catch(function () {
             console.error('Erreur l65')
         })
+
+        // affichage du panier
         .then(function panierLook() {
-            // affichage du panier
             panierIndex.addEventListener('click', (event => {
                 event.preventDefault();
                 listingPanier();
@@ -111,11 +112,12 @@ function pageProduct(val) {
     p1.then(function () {
 
         let index = val;
-        let pageHash = location.hash;
-        console.log(pageHash)
         for (r in lecture) {
-            location.hash = lecture[val].name;
-
+            //ajout du nom dans l'url
+            let global = / /g;
+            let newLocation = lecture[val].name.replace(global,'-')
+            location.hash = newLocation;
+            let retour = window.location.hash.substring(1);
             if (r === index) {
                 titre.innerHTML = lecture[index].name;
                 let pr = lecture[index].price / 100
@@ -139,6 +141,8 @@ function pageProduct(val) {
             }
         }
     })
+
+    // envoi du formulaire lors du click sur achat
         .then(function () {
             for (r in lecture) {
                 if (val === r) {
@@ -169,7 +173,7 @@ function formulaire(ref, quantite, lentille) {
         quantite: quantite,
     };
     qte(formulaire, ref);
-    prixPanier()
+
 }
 // initialisation du panier
 
@@ -224,7 +228,7 @@ function addToBasket(product) {
 //affichage d'une alerte rajout au panier
 function alertPanier(val, val1) {
     for (r in lecture) {
-        popAlerte.innerHTML = '<div class="row z-index-3"><div class="col"><div class="alert alert-sucess alert-dismissible fade show" role="aler"><h5 class="alert-heading">Produit rajouter au panier<h5><div alert>' + lecture[val].name + ' Avec lentille de ' + val1 + '</div><button type="button" data-dismiss="alert">Continuer mes achats</button><button type="button" data-dismiss="alert" id="alertPanier">Mon Panier</button></div></div></div>';
+        popAlerte.innerHTML = '<div class="row z-index-3"><div class="col"><div class="alert alert-sucess alert-dismissible fade show text-center" role="aler"><h5 class="alert-heading">Produit rajouter au panier<h5><div alert>' + lecture[val].name + ' Avec lentille de ' + val1 + '</div><button type="button" data-dismiss="alert" class="m-2 btn-success">Continuer mes achats</button><button type="button" data-dismiss="alert" id="alertPanier" class="m-2 btn-success">Mon Panier</button></div></div></div>';
     }
     let alertPanier = document.getElementById('alertPanier');
     alertPanier.addEventListener('click', function (e) {
@@ -294,7 +298,7 @@ function listingPanier() {
                     let indexModifValue = indexModif.selectedIndex + 1
                     let id = lecture.indexOf(result);
                     formulaire(id, indexModifValue, lentille)
-
+                    prixPanier()
                 })
             }
 
@@ -358,7 +362,7 @@ function prixPanier() {
     for (let r = 0; r < localId.length; r++) {
         const filter = lecture.filter(item => item._id === localId[r].ref)[0]
         let id = lecture.indexOf(filter);
-        prix += (lecture[id].price * localId[r].quantite) / 100;
+        prix += Number(lecture[id].price * localId[r].quantite) / 100;
     }
     indexTotal.classList.remove('d-none');
     let totalPanier = ' ';
@@ -418,10 +422,11 @@ function validationForm() {
     const regexResultCity = regexCity.test(contact.city)
     const regexResultAddress = regexAddress.test(contact.address)
     const regexResultM = regexM.test(contact.email)
-    console.log(regexResultFirstName, regexResultLastName, regexResultCity, regexResultAddress, regexResultM)
     let p1 = new Promise((resolve, reject) => {
         resolve(contact);
     })
+
+    // regex First Name
     p1.then(function () {
         if (regexResultFirstName == false) {
             validationForm.disabled = true;
@@ -432,6 +437,8 @@ function validationForm() {
             document.getElementById('firstName').classList.remove('border-danger')
         }
     })
+
+    // regex Last Name
         .then(function () {
             if (regexResultLastName == false) {
                 validationForm.disabled = true;
@@ -442,6 +449,8 @@ function validationForm() {
                 document.getElementById('lastName').classList.add('border-success')
             }
         })
+
+    // regex Ville
         .then(function () {
             if (regexResultCity == false) {
                 validationForm.disabled = true;
@@ -452,6 +461,8 @@ function validationForm() {
                 document.getElementById('city').classList.add('border-success')
             }
         })
+
+    // regex Adresse
         .then(function () {
             if (regexResultAddress == false) {
                 validationForm.disabled = true;
@@ -462,6 +473,8 @@ function validationForm() {
                 document.getElementById('address').classList.add('border-success')
             }
         })
+
+    // regex E-mail
         .then(function () {
             if (regexResultM == false) {
                 validationForm.disabled = true;
