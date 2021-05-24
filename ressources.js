@@ -519,11 +519,11 @@ function send(contact) {
                             titre.innerHTML = 'Merci de votre Commande Mr/Mme ' + response.contact.firstName;
                             document.querySelector('#sousliste').innerHTML = 'N° ' + response.orderId
                             panierValider.innerHTML += '<div><p>Merci de votre achat chez Orinico<p><div>'
-                            panierValider.innerHTML += '<div><p>Voici le récapitulatif de votre commande<p><div>'
+                            panierValider.innerHTML += '<div><p>Voici les détails de votre commande<p><div>'
                             for (r in response.products) {
                                 panierValider.innerHTML += '<div><p>Produit : ' + response.products[r].name + '<p><div>'
                             }
-                            panierValider.innerHTML += '<div><p>votre commande sera expédié dans les plus bref délais<p><div>'
+                            panierValider.innerHTML += '<div><p>votre commande sera expédiée dans les plus bref délais<p><div>'
                             panierValider.innerHTML += '<div><p> Voici les informations de livraison !<p><div>'
                             panierValider.innerHTML += '<div><p>Nom : ' + response.contact.firstName + '<p><div>'
                             panierValider.innerHTML += '<div><p>Prenom : ' + response.contact.lastName + '<p><div>'
