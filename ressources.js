@@ -308,18 +308,18 @@ function listingPanier() {
         })
         // Suppresion d'une entrée du panier
         .then(function () {
-            if(localId.length == 0){
+            if (localId.length == 0) {
                 throw 'erreur : panier vide'
-            }else{
-            for (let r = 0; r < localId.length; r++) {
-                let index = r
-                let indexTrash = document.getElementById('trash' + localId[index].ref);
-                indexTrash.addEventListener('click', function () {
-                    supp(index)
-                    listingPanier()
-                })
+            } else {
+                for (let r = 0; r < localId.length; r++) {
+                    let index = r
+                    let indexTrash = document.getElementById('trash' + localId[index].ref);
+                    indexTrash.addEventListener('click', function () {
+                        supp(index)
+                        listingPanier()
+                    })
+                }
             }
-        }
         })
         // envoi des informations à getContact pour passer à la validation
         .then(function () {
@@ -423,54 +423,54 @@ function validationForm() {
     const regexResultCity = regexCity.test(contact.city)
     const regexResultAddress = regexAddress.test(contact.address)
     const regexResultM = regexM.test(contact.email)
-    let resolut = true;
+    let resolu = true;
     let p1 = new Promise((resolve, reject) => {
         resolve(contact);
     })
 
     // regex formulaire
     p1.then(function () {
-        if (regexResultFirstName == false){
+        if (regexResultFirstName == false) {
             document.getElementById('firstName').classList.add('border-danger')
             document.getElementById('firstName').classList.remove('border-success')
-            resolut = false;
-        }else{
+            resolu = false;
+        } else {
             document.getElementById('firstName').classList.add('border-success')
             document.getElementById('firstName').classList.remove('border-danger')
-        }if (regexResultLastName == false){
+        } if (regexResultLastName == false) {
             document.getElementById('lastName').classList.add('border-danger')
             document.getElementById('firstName').classList.remove('border-success')
-            resolut = false;
+            resolu = false;
         } else {
             document.getElementById('lastName').classList.remove('border-danger')
             document.getElementById('lastName').classList.add('border-success')
-        }if (regexResultCity == false) {
+        } if (regexResultCity == false) {
             document.getElementById('city').classList.add('border-danger')
             document.getElementById('firstName').classList.remove('border-success')
-            resolut = false;
+            resolu = false;
         } else {
             document.getElementById('city').classList.remove('border-danger')
             document.getElementById('city').classList.add('border-success')
-        }if (regexResultAddress == false) {
+        } if (regexResultAddress == false) {
             document.getElementById('address').classList.add('border-danger')
             document.getElementById('firstName').classList.remove('border-success')
-            resolut = false;
+            resolu = false;
         } else {
             document.getElementById('address').classList.remove('border-danger')
             document.getElementById('address').classList.add('border-success')
         } if (regexResultM == false) {
             document.getElementById('email').classList.add('border-danger')
             document.getElementById('firstName').classList.remove('border-success')
-            resolut = false;
+            resolu = false;
         } else {
             document.getElementById('email').classList.remove('border-danger')
             document.getElementById('email').classList.add('border-success')
-        } if (resolut == false || JSON.parse(localStorage.getItem('Panier')).length <= 0){
+        } if (resolu == false || JSON.parse(localStorage.getItem('Panier')).length <= 0) {
             validationForm.disabled = true;
-        } else{
+        } else {
             validationForm.disabled = false;
         }
-        })
+    })
 }
 
 //Envoi des informations à l'api
