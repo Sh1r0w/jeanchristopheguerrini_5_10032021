@@ -1,6 +1,4 @@
 const url = 'http://localhost:3000/api/cameras/';
-const urlOrder = 'http://localhost:3000/api/cameras/order';
-const urlId = 'http://localhost:3000/api/cameras/:_id';
 //const url = 'https://ab-p5-api.herokuapp.com/api/cameras'
 const recapPanier = document.getElementById('tabPanier');
 const listing = document.querySelector('#listing');
@@ -11,9 +9,7 @@ const mainTitre = document.querySelector('#mainTitre');
 const sousTitre = document.querySelector('#sousliste')
 const catalogue = [];
 const panier = [];
-const lecture = JSON.parse(localStorage.getItem('catalogue'));
 const nbAff = document.getElementById('nbArticle');
-const localId = JSON.parse(localStorage.getItem('Panier'))
 const total = document.getElementById('total');
 const panierGlobal = document.querySelector('#recap');
 const indexTotal = document.querySelector('#total');
@@ -45,16 +41,19 @@ fetch(url)
             })
             .catch(function () {
                 console.error("Erreur l26")
+
             })
     })
-    
+    .catch(function () {
+        listing.innerHTML = '<div class=""><img src="images/underconstruction.jpg" alt="Orinoco Revient vite"></div>'
+    })
 //----------------------------------------------------------------- Panier -----------------------------------------
 function addEvent(val) {
     let p1 = new Promise((resolve, reject) => {
         resolve(val)
     })
     p1.then(function () {
-        // enregistrement dans le panier
+        // ajout au panier
         for (r in val) {
             let index = r
             const achat = document.getElementById('achat' + [r]);
@@ -67,39 +66,40 @@ function addEvent(val) {
             });
         }
     })
-    .catch(function () {
+        .catch(function () {
             console.error('Erreur l48')
         })
-    .then(function () {
-        // affichage page produit
-        for (r in val) {
-            let index = r;
-            const productPage = document.getElementById('product' + [r]);
-            productPage.addEventListener('click', function (e) {
-                e.preventDefault();
-                pageProduct(index)
-            })
-        }
-    })
-    .catch(function () {
-        console.error('Erreur l65')
-    })
+        .then(function () {
+            // affichage page produit
+            for (r in val) {
+                let index = r;
+                const productPage = document.getElementById('product' + [r]);
+                productPage.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    pageProduct(index)
+                })
+            }
+        })
+        .catch(function () {
+            console.error('Erreur l65')
+        })
 
-    // affichage du panier
-    .then(function panierLook() {
-        panierIndex.addEventListener('click', (event => {
-            event.preventDefault();
-            listingPanier();
-        }))
-    })
-    .catch(function () {
-        console.error('Erreur l79')
-    })
+        // affichage du panier
+        .then(function panierLook() {
+            panierIndex.addEventListener('click', (event => {
+                event.preventDefault();
+                listingPanier();
+            }))
+        })
+        .catch(function () {
+            console.error('Erreur l79')
+        })
 }
 
 // Affichage page produit Promise
 
 function pageProduct(val) {
+    const lecture = JSON.parse(localStorage.getItem('catalogue'));
     let id = document.getElementById('product' + val);
     listing.classList.add('d-none');
     listing.classList.remove('d-inline-flex');
@@ -114,7 +114,7 @@ function pageProduct(val) {
         let index = val;
         for (r in lecture) {
             //ajout du nom dans l'url
-            location.hash = lecture[val]._id;
+            location.hash = lecture[val].name;
 
             if (r === index) {
                 titre.innerHTML = lecture[index].name;
@@ -131,16 +131,15 @@ function pageProduct(val) {
                 indexProduct += '</div>'
                 productPage.innerHTML += indexProduct;
 
-                for (let i = 0; i < lecture[val].lenses.length; i++) {
+                for (i = 0; i < lecture[val].lenses.length; i++) {
                     const indexLenses = document.getElementById('lensesOptions');
-                    console.log(indexLenses)
                     indexLenses.innerHTML += '<option valeur="' + i + '">' + lecture[val].lenses[i] + '</option>';
                 }
             }
         }
     })
 
-        // envoi du formulaire lors du click sur achat
+        // ajout au panier de la page produit
         .then(function () {
             for (r in lecture) {
                 if (val === r) {
@@ -149,10 +148,8 @@ function pageProduct(val) {
                     achatP.addEventListener('click', function (e) {
                         let choixQte1 = document.getElementById('choixQte1' + [val]).value
                         let choixLen1 = document.getElementById('lensesOptions').value
-                        console.log(choixLen1)
                         e.preventDefault();
                         formulaire(val, choixQte1, choixLen1);
-                        console.log(val)
                         nbArticle(nbAff);
                     });
                 }
@@ -165,6 +162,7 @@ function pageProduct(val) {
 
 // Formulaire d'enregistrement local du panier
 function formulaire(ref, quantite, lentille) {
+    const lecture = JSON.parse(localStorage.getItem('catalogue'));
     let formulaire = {
         ref: lecture[ref]._id,
         lentille: lentille,
@@ -173,8 +171,8 @@ function formulaire(ref, quantite, lentille) {
     qte(formulaire, ref);
 
 }
-// initialisation du panier
 
+// initialisation du panier
 function basketInit() {
     let basket = localStorage.getItem('Panier');
     if (basket != null) {
@@ -225,6 +223,7 @@ function addToBasket(product) {
 
 //affichage d'une alerte rajout au panier
 function alertPanier(val, val1) {
+    const lecture = JSON.parse(localStorage.getItem('catalogue'));
     for (r in lecture) {
         popAlerte.innerHTML = '<div class="row z-index-3"><div class="col"><div class="alert alert-sucess alert-dismissible fade show text-center" role="aler"><h5 class="alert-heading">Produit rajouter au panier<h5><div alert>' + lecture[val].name + ' Avec lentille de ' + val1 + '</div><button type="button" data-dismiss="alert" class="m-2 btn-success">Continuer mes achats</button><button type="button" data-dismiss="alert" id="alertPanier" class="m-2 btn-success">Mon Panier</button></div></div></div>';
     }
@@ -244,7 +243,7 @@ function saveBasket(basket) {
 
 // affichage des produits dans le panier Promise
 function listingPanier() {
-
+    const lecture = JSON.parse(localStorage.getItem('catalogue'));
     const localId = JSON.parse(localStorage.getItem('Panier'))
     titre.innerHTML = 'Mon Panier';
     recapPanier.innerHTML = '<tr><td class="w-25 border border-dark text-center">Produit</td><td class="border border-dark text-center">Nom</td><td class="border border-dark text-center">Quantité</td><td class="border border-dark text-center">Prix TTc</td></tr>';
@@ -256,6 +255,7 @@ function listingPanier() {
     panierIndex.classList.add('d-none');
     indexForm.classList.remove('d-none');
     location.hash = "panier";
+
     let p1 = new Promise((resolve, reject) => {
         resolve(localId);
     })
@@ -271,14 +271,12 @@ function listingPanier() {
             let price = pr.toLocaleString('fr', { style: 'currency', currency: 'EUR' });
             let indexPanier = ' ';
 
-
             indexPanier += '<tr>'
             indexPanier += '<td id="idTab ' + localId[i].ref + '"class="border border-dark text-center"><img class="text-left w-50" src="' + lecture[id].imageUrl + '"></td>'
             indexPanier += '<td class="border border-dark text-center">' + lecture[id].name + ' avec lentille ' + localId[i].lentille + '</td>'
             indexPanier += '<td class="border border-dark text-center"><select class="col-lg-6 col-md-10 text-center m-lg-2" name="quantite" id="choixQteP' + [i] + '"><option id="option' + [i] + '1" value="1"> 1 </option><option id="option' + [i] + '2" value="2"> 2 </option><option id="option' + [i] + '3" value="3"> 3 </option><option id="option' + [i] + '4" value="4"> 4 </option></select><i id="trash' + localId[i].ref + '" class="fas fa-trash-alt"></i></td>'
             indexPanier += '<td class="border border-dark text-right" id="prixUnitaire">' + price + '</td>'
             indexPanier += '</tr>'
-
             recapPanier.innerHTML += indexPanier;
 
 
@@ -306,7 +304,8 @@ function listingPanier() {
 
         //Affichage du formulaire
         .then(function () {
-            indexForm.innerHTML = '<form id="validation"><div class="col-lg-6 col-sm-12 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required></input> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required></input><label for="adresse">Adresse:</label><input type="text" id="address" required></input><label for="ville">Ville</label><input type="text" id="city" required ></input><label for="email">E-mail</label><input id="email" class="" type="email" required "></input><input type="submit" id="validationForm"class=" m-2"></div></form>'
+
+            indexForm.innerHTML = '<form id="validation"><div class="col-lg-6 col-sm-12 d-flex flex-column"><label for="nom">Votre Nom : </label><input type="text" id="firstName" required></input> <label for="prenom"> Votre Prénom:</label><input type="text" id="lastName" required></input><label for="adresse">Adresse:</label><input type="text" id="address" required></input><label for="ville">Ville</label><input type="text" id="city" required ></input><label for="email">E-mail</label><input id="email" class="" type="email" required "></input><input type="submit" id="validationForm"class=" m-2" disabled></div></form>'
 
             const allInput = document.getElementById('validation');
 
@@ -318,6 +317,7 @@ function listingPanier() {
         })
         // Suppresion d'une entrée du panier
         .then(function () {
+
             for (let r = 0; r < localId.length; r++) {
                 let index = r
                 let indexTrash = document.getElementById('trash' + localId[index].ref);
@@ -336,7 +336,6 @@ function listingPanier() {
         })
         .catch(function () {
             panierGlobal.innerHTML = '<div class="text-center"><p>Aucun article dans votre panier</p></div>';
-
         });
 }
 
@@ -352,6 +351,7 @@ function getContact() {
 }
 //affichage des quantitées dans le panier
 function lookQte() {
+    const localId = JSON.parse(localStorage.getItem('Panier'))
     for (i in localId) {
         document.getElementById('option' + [i] + localId[i].quantite).setAttribute("selected", true)
     }
@@ -360,8 +360,10 @@ function lookQte() {
 
 //affichage du prix avec TVA dans le panier
 function prixPanier() {
+    const lecture = JSON.parse(localStorage.getItem('catalogue'));
+    const localId = JSON.parse(localStorage.getItem('Panier'))
     let prix = 0;
-    for (r in localId) {
+    for (let r = 0; r < localId.length; r++) {
         let qtePanier = document.getElementById('choixQteP' + [r]).value;
         const filter = lecture.filter(item => item._id === localId[r].ref)[0]
         let id = lecture.indexOf(filter);
@@ -386,6 +388,7 @@ function prixPanier() {
 
 // suppression dans le panier
 function supp(val) {
+    const localId = JSON.parse(localStorage.getItem('Panier'))
     const result = localId.filter(item => item.ref === localId[val].ref)[0]
     let id = localId.indexOf(result);
     console.log(id)
@@ -395,15 +398,15 @@ function supp(val) {
 
 //affichage du nombre d'articles présent dans le panier 
 function nbArticle(val) {
-    const nb = JSON.parse(localStorage.getItem('Panier'));
+    const localId = JSON.parse(localStorage.getItem('Panier'))
 
     let p1 = new Promise((resolve, reject) => {
-        resolve(nb);
+        resolve(localId);
     });
 
     p1.then(
         function () {
-            val.innerHTML = '<div>(' + nb.length + ' Article' + ((localId.length > 1) ? 's' : ' ') + ' dans votre panier)</div>'
+            val.innerHTML = '<div>(' + localId.length + ' Article' + ((localId.length > 1) ? 's' : ' ') + ' dans votre panier)</div>'
         }).catch(
             function () {
                 val.innerHTML = '<div>(Aucun article dans votre panier)</div>'
@@ -427,74 +430,55 @@ function validationForm() {
     const regexResultCity = regexCity.test(contact.city)
     const regexResultAddress = regexAddress.test(contact.address)
     const regexResultM = regexM.test(contact.email)
+    let resolut = true;
     let p1 = new Promise((resolve, reject) => {
         resolve(contact);
     })
 
     // regex First Name
     p1.then(function () {
-        if (regexResultFirstName == false) {
-            validationForm.disabled = true;
+        if (regexResultFirstName == false){
             document.getElementById('firstName').classList.add('border-danger')
-        } else {
-            validationForm.disabled = false;
+            resolut = false;
+        }else{
             document.getElementById('firstName').classList.add('border-success')
             document.getElementById('firstName').classList.remove('border-danger')
+        }if (regexResultLastName == false){
+            document.getElementById('lastName').classList.add('border-danger')
+            resolut = false;
+        } else {
+            document.getElementById('lastName').classList.remove('border-danger')
+            document.getElementById('lastName').classList.add('border-success')
+        }if (regexResultCity == false) {
+            document.getElementById('city').classList.add('border-danger')
+            resolut = false;
+        } else {
+            document.getElementById('city').classList.remove('border-danger')
+            document.getElementById('city').classList.add('border-success')
+        }if (regexResultAddress == false) {
+            document.getElementById('address').classList.add('border-danger')
+            resolut = false;
+        } else {
+            document.getElementById('address').classList.remove('border-danger')
+            document.getElementById('address').classList.add('border-success')
+        } if (regexResultM == false) {
+            document.getElementById('email').classList.add('border-danger')
+            resolut = false;
+        } else {
+            document.getElementById('email').classList.remove('border-danger')
+            document.getElementById('email').classList.add('border-success')
+        } if (resolut == false){
+            validationForm.disabled = true;
+        } else{
+            validationForm.disabled = false;
         }
-    })
-
-        // regex Last Name
-        .then(function () {
-            if (regexResultLastName == false) {
-                validationForm.disabled = true;
-                document.getElementById('lastName').classList.add('border-danger')
-            } else {
-                validationForm.disabled = false;
-                document.getElementById('lastName').classList.remove('border-danger')
-                document.getElementById('lastName').classList.add('border-success')
-            }
-        })
-
-        // regex Ville
-        .then(function () {
-            if (regexResultCity == false) {
-                validationForm.disabled = true;
-                document.getElementById('city').classList.add('border-danger')
-            } else {
-                validationForm.disabled = false;
-                document.getElementById('city').classList.remove('border-danger')
-                document.getElementById('city').classList.add('border-success')
-            }
-        })
-
-        // regex Adresse
-        .then(function () {
-            if (regexResultAddress == false) {
-                validationForm.disabled = true;
-                document.getElementById('address').classList.add('border-danger')
-            } else {
-                validationForm.disabled = false;
-                document.getElementById('address').classList.remove('border-danger')
-                document.getElementById('address').classList.add('border-success')
-            }
-        })
-
-        // regex E-mail
-        .then(function () {
-            if (regexResultM == false) {
-                validationForm.disabled = true;
-                document.getElementById('email').classList.add('border-danger')
-            } else {
-                validationForm.disabled = false;
-                document.getElementById('email').classList.remove('border-danger')
-                document.getElementById('email').classList.add('border-success')
-            }
         })
 }
 
 //Envoi des informations à l'api
 
 function send(contact) {
+    const localId = JSON.parse(localStorage.getItem('Panier'))
     console.log('fdsfdsq')
     let p1 = new Promise((resolve, reject) => {
         resolve(contact);
@@ -548,6 +532,7 @@ function send(contact) {
                             panierValider.innerHTML += '<div><p>Email de contact : ' + response.contact.email + '<p><div>'
 
                         }
+                        localStorage.removeItem('Panier')
                     })
             });
     })
