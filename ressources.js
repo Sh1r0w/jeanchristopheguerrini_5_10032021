@@ -1,5 +1,4 @@
 const url = 'http://localhost:3000/api/cameras/';
-//const url = 'https://ab-p5-api.herokuapp.com/api/cameras'
 const recapPanier = document.getElementById('tabPanier');
 const listing = document.querySelector('#listing');
 const panierIndex = document.querySelector('#panier');
@@ -309,7 +308,9 @@ function listingPanier() {
         })
         // Suppresion d'une entrée du panier
         .then(function () {
-
+            if(localId.length == 0){
+                throw 'erreur : panier vide'
+            }else{
             for (let r = 0; r < localId.length; r++) {
                 let index = r
                 let indexTrash = document.getElementById('trash' + localId[index].ref);
@@ -318,6 +319,7 @@ function listingPanier() {
                     listingPanier()
                 })
             }
+        }
         })
         // envoi des informations à getContact pour passer à la validation
         .then(function () {
@@ -383,7 +385,6 @@ function supp(val) {
     const localId = JSON.parse(localStorage.getItem('Panier'))
     const result = localId.filter(item => item.ref === localId[val].ref)[0]
     let id = localId.indexOf(result);
-    console.log(id)
     localId.splice(id, 1);
     saveBasket(localId);
 }
@@ -431,30 +432,35 @@ function validationForm() {
     p1.then(function () {
         if (regexResultFirstName == false){
             document.getElementById('firstName').classList.add('border-danger')
+            document.getElementById('firstName').classList.remove('border-success')
             resolut = false;
         }else{
             document.getElementById('firstName').classList.add('border-success')
             document.getElementById('firstName').classList.remove('border-danger')
         }if (regexResultLastName == false){
             document.getElementById('lastName').classList.add('border-danger')
+            document.getElementById('firstName').classList.remove('border-success')
             resolut = false;
         } else {
             document.getElementById('lastName').classList.remove('border-danger')
             document.getElementById('lastName').classList.add('border-success')
         }if (regexResultCity == false) {
             document.getElementById('city').classList.add('border-danger')
+            document.getElementById('firstName').classList.remove('border-success')
             resolut = false;
         } else {
             document.getElementById('city').classList.remove('border-danger')
             document.getElementById('city').classList.add('border-success')
         }if (regexResultAddress == false) {
             document.getElementById('address').classList.add('border-danger')
+            document.getElementById('firstName').classList.remove('border-success')
             resolut = false;
         } else {
             document.getElementById('address').classList.remove('border-danger')
             document.getElementById('address').classList.add('border-success')
         } if (regexResultM == false) {
             document.getElementById('email').classList.add('border-danger')
+            document.getElementById('firstName').classList.remove('border-success')
             resolut = false;
         } else {
             document.getElementById('email').classList.remove('border-danger')
