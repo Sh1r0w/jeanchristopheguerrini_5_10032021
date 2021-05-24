@@ -2,22 +2,14 @@ const url = 'http://localhost:3000/api/cameras/';
 //const url = 'https://ab-p5-api.herokuapp.com/api/cameras'
 const recapPanier = document.getElementById('tabPanier');
 const listing = document.querySelector('#listing');
-const imgLocal = localStorage.getItem('img');
 const panierIndex = document.querySelector('#panier');
 const titre = document.querySelector('#listecam');
-const mainTitre = document.querySelector('#mainTitre');
-const sousTitre = document.querySelector('#sousliste')
-const catalogue = [];
-const panier = [];
 const nbAff = document.getElementById('nbArticle');
 const total = document.getElementById('total');
 const panierGlobal = document.querySelector('#recap');
 const indexTotal = document.querySelector('#total');
-let prix = 0;
 const indexForm = document.getElementById('formulaire');
 const productPage = document.getElementById('pageProduct');
-const popAlerte = document.getElementById('alerte');
-const panierValider = document.getElementById('sendForm');
 
 // récuprération liste des caméras et affichage / enregistrement dans le local storage
 fetch(url)
@@ -225,7 +217,7 @@ function addToBasket(product) {
 function alertPanier(val, val1) {
     const lecture = JSON.parse(localStorage.getItem('catalogue'));
     for (r in lecture) {
-        popAlerte.innerHTML = '<div class="row z-index-3"><div class="col"><div class="alert alert-sucess alert-dismissible fade show text-center" role="aler"><h5 class="alert-heading">Produit rajouter au panier<h5><div alert>' + lecture[val].name + ' Avec lentille de ' + val1 + '</div><button type="button" data-dismiss="alert" class="m-2 btn-success">Continuer mes achats</button><button type="button" data-dismiss="alert" id="alertPanier" class="m-2 btn-success">Mon Panier</button></div></div></div>';
+        document.getElementById('alerte').innerHTML = '<div class="row z-index-3"><div class="col"><div class="alert alert-sucess alert-dismissible fade show text-center" role="aler"><h5 class="alert-heading">Produit rajouter au panier<h5><div alert>' + lecture[val].name + ' Avec lentille de ' + val1 + '</div><button type="button" data-dismiss="alert" class="m-2 btn-success">Continuer mes achats</button><button type="button" data-dismiss="alert" id="alertPanier" class="m-2 btn-success">Mon Panier</button></div></div></div>';
     }
     let alertPanier = document.getElementById('alertPanier');
     alertPanier.addEventListener('click', function (e) {
@@ -435,7 +427,7 @@ function validationForm() {
         resolve(contact);
     })
 
-    // regex First Name
+    // regex formulaire
     p1.then(function () {
         if (regexResultFirstName == false){
             document.getElementById('firstName').classList.add('border-danger')
@@ -467,7 +459,7 @@ function validationForm() {
         } else {
             document.getElementById('email').classList.remove('border-danger')
             document.getElementById('email').classList.add('border-success')
-        } if (resolut == false){
+        } if (resolut == false || JSON.parse(localStorage.getItem('Panier')).length <= 0){
             validationForm.disabled = true;
         } else{
             validationForm.disabled = false;
@@ -478,6 +470,7 @@ function validationForm() {
 //Envoi des informations à l'api
 
 function send(contact) {
+    const panierValider = document.getElementById('sendForm');
     const localId = JSON.parse(localStorage.getItem('Panier'))
     console.log('fdsfdsq')
     let p1 = new Promise((resolve, reject) => {
@@ -518,7 +511,7 @@ function send(contact) {
 
 
                             titre.innerHTML = 'Merci de votre Commande Mr/Mme ' + response.contact.firstName;
-                            sousTitre.innerHTML = 'N° ' + response.orderId
+                            document.querySelector('#sousliste').innerHTML = 'N° ' + response.orderId
                             panierValider.innerHTML += '<div><p>Merci de votre achat chez Orinico<p><div>'
                             panierValider.innerHTML += '<div><p>Voici le récapitulatif de votre commande<p><div>'
                             for (r in response.products) {
